@@ -1,99 +1,59 @@
-/* EXPRESS SETUP */
-
 const express = require('express');
-const app = express();
-
-app.use(express.static(__dirname));
-
+const expressLayout = require('express-ejs-layouts');
+const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const expressSession = require('express-session')({
-  secret: 'secret',
-  resave: false,
-  saveUninitialized: false
-});
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(expressSession);
-
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log('App listening on port ' + port));
-
-/*  PASSPORT SETUP  */
-
+const flash = require('connect-flash');
+const expressSession = require('express-session');
 const passport = require('passport');
 
+const app = express();
+
+// Passport Config
+require('./config/passport')(passport);
+
+//DB Config
+const db = require('./config/keys').MongoURI;
+
+//Connect to MongoDB ATLAS
+mongoose.connect(db, {useNewUrlParser: true, useUnifiedTopology: true})
+.then(()=>console.log('MongoDB Connected ...'))
+.catch(err =>console.log(err));
+
+//EJS
+app.use(expressLayout);
+app.set('view engine', 'ejs');
+
+//bodyParser
+app.use(express.urlencoded({extended:false}));
+
+//Express session
+app.use(expressSession({
+    secret: 'secret',
+    resave: true,
+    saveUninitialized: true
+  })
+);
+
+//Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
+//Connect flash
+app.use(flash());
 
-/* MONGOOSE SETUP */
-
-const mongoose = require('mongoose');
-const passportLocalMongoose = require('passport-local-mongoose');
-
-mongoose.connect('mongodb://localhost/MyDatabase',
-  { useNewUrlParser: true, useUnifiedTopology: true });
-
-const Schema = mongoose.Schema;
-const UserDetail = new Schema({
-  username: String,
-  password: String
-});
-
-UserDetail.plugin(passportLocalMongoose);
-const UserDetails = mongoose.model('userInfo', UserDetail, 'userInfo');
-
-
-/* PASSPORT LOCAL AUTHENTICATION */
-
-passport.use(UserDetails.createStrategy());
-
-passport.serializeUser(UserDetails.serializeUser());
-passport.deserializeUser(UserDetails.deserializeUser());
+//Global variables for different messages (maybe add this in a separate file)
+app.use((req, res, next) =>{
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.error = req.flash('error');
+  next();
+  }
+);
 
 /* ROUTES */
 
-const connectEnsureLogin = require('connect-ensure-login');
+app.use("/", require("./routes/index"));
+app.use("/users", require("./routes/users"));
 
-app.post('/login', (req, res, next) => {
-  passport.authenticate('local',
-  (err, user, info) => {
-    if (err) {
-      return next(err);
-    }
-
-    if (!user) {
-      return res.redirect('/login?info=' + info);
-    }
-
-    req.logIn(user, function(err) {
-      if (err) {
-        return next(err);
-      }
-
-      return res.redirect('/');
-    });
-
-  })(req, res, next);
-});
-
-app.get('/login',
-  (req, res) => res.sendFile('html/login.html',
-  { root: __dirname })
-);
-
-app.get('/',
-  connectEnsureLogin.ensureLoggedIn(),
-  (req, res) => res.sendFile('html/index.html', {root: __dirname})
-);
-
-app.get('/private',
-  connectEnsureLogin.ensureLoggedIn(),
-  (req, res) => res.sendFile('html/private.html', {root: __dirname})
-);
-
-app.get('/user',
-  connectEnsureLogin.ensureLoggedIn(),
-  (req, res) => res.send({user: req.user})
-);
+const port = process.env.PORT || 3000; //port setting
+app.listen(port, () => console.log('App listening on port ' + port));
