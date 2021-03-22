@@ -26,6 +26,9 @@ app.set('view engine', 'ejs');
 //bodyParser
 app.use(express.urlencoded({extended:false}));
 
+//public add
+app.use(express.static("public"));
+
 //Express session
 app.use(expressSession({
     secret: 'secret',
@@ -46,6 +49,7 @@ app.use((req, res, next) =>{
   res.locals.success_msg = req.flash('success_msg');
   res.locals.error_msg = req.flash('error_msg');
   res.locals.error = req.flash('error');
+  res.locals.delete_msg = req.flash('delete_msg');
   next();
   }
 );

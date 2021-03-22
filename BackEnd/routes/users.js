@@ -3,6 +3,8 @@ const router = express.Router();
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const { ensureAuthenticated, forwardAuthenticated } = require('../config/auth');
+
 
 //Get Requests
   //Login
@@ -14,10 +16,17 @@ router.get('/register',
   (req, res) => res.render('register')
 );
 
+//2 factor authenticator
+
+router.get('/setup-2fa',
+  (req, res) => res.render('setup-2fa')
+);
+
 //Post Requests
 router.post('/register',
   (req, res) =>{
     const{name,email,password, password2} = req.body;
+    const regularExpression = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]/;
     let errors = [];
 
     //Check fields are all filled
@@ -31,8 +40,12 @@ router.post('/register',
     }
 
     //Check password length
-    if(password.length < 8){
-      errors.push({msg: "Password has to be at least 8 characters long"});
+    if(password.length < 8 ){
+      errors.push({msg: "Password has to be at least 8 characters long "});
+    }
+    //Check password has a number or special character
+    if(!regularExpression.test(password)){
+      errors.push({msg: "Password has to include a number and special character"});
     }
 
     if(errors.length > 0){
@@ -99,7 +112,13 @@ router.post('/login', (req, res, next) => {
   })(req, res, next);
 });
 
+//Delete user
 
+router.get('/delete', ensureAuthenticated, (req, res) =>
+  res.render('delete', {
+    user: req.user
+  })
+);
 //Logout
 
 router.get('/logout', (req, res) =>{
