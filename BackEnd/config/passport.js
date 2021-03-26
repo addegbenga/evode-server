@@ -1,42 +1,76 @@
-const localStrategy = require('passport-local').Strategy;
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const localStrategy = require("passport-local").Strategy;
 
 //Local User model
-const User = require('../models/User');
+const User = require("../models/User");
 
-module.exports = function(passport){
+module.exports = function (passport) {
   passport.use(
-    new localStrategy({usernameField: 'email' }, (email, password, done) =>{
-      //Match users
-      User.findOne({email: email})
-      .then(user =>{
-        if(!user){
-          return done(null, false, {msg: 'That email is not registered'});
-        }
-
-        //Match password
-        bcrypt.compare(password, user.password, (err, isMatch) =>{
-          if(err) throw err;
-          if(isMatch){
-            return done(null, user)
-          }else{
-            return done(null, false, {msg: 'Password incorrect'})
+    "register",
+    new localStrategy(
+      {
+        usernameField: "email",
+        passwordField: "password",
+        passReqToCallback: true,
+      },
+      async (req, email, password, done, info) => {
+        try {
+          let user = await User.findOne({ email: email });
+          if (user) {
+            return done(null, false, { message: "user already exist" });
+            // return done(null, false);
           }
-        });
+          let newUser = new User();
 
-      })
-      .catch(err =>console.log(err));
-    })
+          newUser.name = req.body.name;
+          newUser.email = email;
+          newUser.password = password;
+
+          user = await newUser.save();
+          return done(null, user);
+        } catch (error) {
+          console.log(error);
+          // return done(error);
+        }
+      }
+    )
   );
 
-  passport.serializeUser((user, done) =>{
+  passport.use(
+    "login",
+    new localStrategy(
+      {
+        usernameField: "email",
+        passwordField: "password",
+        passReqToCallback: true,
+      },
+      async (req, email, password, done) => {
+        try {
+          const user = await User.findOne({ email: email });
+
+          if (!user) {
+            return done(null, false, { message: "User not found" });
+          }
+
+          const validate = await user.matchPassword(password);
+
+          if (!validate) {
+            return done(null, false, { message: "Wrong Password" });
+          }
+          return done(null, user);
+        } catch (error) {
+          console.log(error);
+          return done(error);
+        }
+      }
+    )
+  );
+  passport.serializeUser((user, done) => {
     done(null, user.id);
   });
 
-  passport.deserializeUser((id, done) => {
+  passport.deserializeUser(async (id, done) => {
     User.findById(id, (err, user) => {
       done(err, user);
     });
   });
-}
+};
