@@ -32,14 +32,14 @@ router.post("/register", function (req, res, next) {
     const { error } = registerValidations(req.body);
     if (error) {
       req.flash("signupMessage", error.details[0].message);
-      return res.redirect("/users/register");
-      // return res.status(400).json(error.details[0].message);
+      // return res.redirect("/users/register");
+      return res.status(400).json(error.details[0].message);
     }
     if (info) {
       // res.status(401);
       req.flash("signupMessage", info.message);
-      return res.redirect("/users/register");
-      // res.status(401).json(info.message);
+      // return res.redirect("/users/register");
+      res.status(401).json(info.message);
     }
     if (user) {
       req.flash("loginMessage", "User created succesfully you can now login"),
@@ -53,28 +53,28 @@ router.post("/register", function (req, res, next) {
 
 router.post("/login", function (req, res, next) {
   passport.authenticate("login", function (err, user, info) {
-    console.log(req.body);
+    console.log(req.session.method);
     if (err) {
       return res.json(err);
     }
     const { error } = loginValidations(req.body);
     if (error) {
       req.flash("loginMessage", error.details[0].message);
-      // res.json(error.details[0].message);
-      return res.redirect("/users/login");
+      res.json(error.details[0].message);
+      // return res.redirect("/users/login");
     }
     if (info) {
       // res.status(401);
       req.flash("loginMessage", info.message);
-      // res.json(info);
-      return res.redirect("/users/login");
+      res.json(info);
+      // return res.redirect("/users/login");
     }
     req.logIn(user, function (err) {
       if (err) {
         return next(err);
       }
-      // res.json(user);
-      return res.redirect("../dashboard");
+      res.json(user);
+      // return res.redirect("../dashboard");
     });
   })(req, res, next);
 });
