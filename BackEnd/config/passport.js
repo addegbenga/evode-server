@@ -64,6 +64,54 @@ module.exports = function (passport) {
       }
     )
   );
+
+  passport.use(
+    "password change",
+    new localStrategy(
+      {
+        usernameField: "email",
+        currentPasswordField: "password",
+        passwordFiel: "newPassword",
+        passReqToCallback: true,
+      },
+      async (req, email, password, newPassword, done) => {
+        try {
+          const user = await User.findOne({ email: email });
+
+          const validate = await user.matchPassword(password);
+
+          if (!validate) {
+            return done(null, false, { message: "Wrong Password" });
+          }
+
+            user.password = newPassword;
+            user.save( (err) =>{
+                if (err) {
+                  return res.status(422).send({
+                    message: errorHandler.getErrorMessage(err)
+                  });
+                } else {
+                  req.login(user, function (err) {
+                    if (err) {
+                      res.status(400).send(err);
+                    } else {
+                      res.send({
+                        message: 'Password changed successfully'
+                      });
+                    }
+                  });
+                }
+              });
+
+          return done(null, user);
+        } catch (error) {
+          console.log(error);
+          return done(error);
+        }
+      }
+    )
+  );
+
   passport.serializeUser((user, done) => {
     done(null, user.id);
   });

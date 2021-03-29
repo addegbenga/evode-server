@@ -69,4 +69,3 @@ app.use("/users", require("./routes/users"));
 
 const port = process.env.PORT || 3000; //port setting
 app.listen(port, () => console.log("App listening on port " + port));
-

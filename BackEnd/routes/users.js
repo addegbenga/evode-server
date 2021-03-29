@@ -9,7 +9,6 @@ const {
 } = require("../config/validation");
 const { ensureAuthenticated, forwardAuthenticated } = require("../config/auth");
 
-//Get Requests
 //Login
 router.get("/login", (req, res) =>
   res.render("login", { message: req.flash("loginMessage") })
@@ -32,14 +31,14 @@ router.post("/register", function (req, res, next) {
     const { error } = registerValidations(req.body);
     if (error) {
       req.flash("signupMessage", error.details[0].message);
-      // return res.redirect("/users/register");
-      return res.status(400).json(error.details[0].message);
+      return res.redirect("/users/register");
+      // return res.status(400).json(error.details[0].message);
     }
     if (info) {
       // res.status(401);
       req.flash("signupMessage", info.message);
-      // return res.redirect("/users/register");
-      res.status(401).json(info.message);
+      return res.redirect("/users/register");
+      // res.status(401).json(info.message);
     }
     if (user) {
       req.flash("loginMessage", "User created succesfully you can now login"),
@@ -53,28 +52,28 @@ router.post("/register", function (req, res, next) {
 
 router.post("/login", function (req, res, next) {
   passport.authenticate("login", function (err, user, info) {
-    console.log(req.session.method);
+    console.log(req.body);
     if (err) {
       return res.json(err);
     }
     const { error } = loginValidations(req.body);
     if (error) {
       req.flash("loginMessage", error.details[0].message);
-      res.json(error.details[0].message);
-      // return res.redirect("/users/login");
+      // res.json(error.details[0].message);
+      return res.redirect("/users/login");
     }
     if (info) {
       // res.status(401);
       req.flash("loginMessage", info.message);
-      res.json(info);
-      // return res.redirect("/users/login");
+      // res.json(info);
+      return res.redirect("/users/login");
     }
     req.logIn(user, function (err) {
       if (err) {
         return next(err);
       }
-      res.json(user);
-      // return res.redirect("../dashboard");
+      // res.json(user);
+      return res.redirect("../dashboard");
     });
   })(req, res, next);
 });
@@ -86,6 +85,42 @@ router.get("/delete", ensureAuthenticated, (req, res) =>
     user: req.user,
   })
 );
+
+//Change password page
+router.get("/passwordChange", ensureAuthenticated, (req, res)=>
+  res.render("passwordChange",{
+    user:req.user,
+  })
+);
+
+//Change password with passport
+
+router.post("/passwordChange",  (req, res, next) =>{
+  passport.authenticate("password change", function (err, user, info) {
+    if (err) {
+      req.flash("signupMessage", err);
+    }
+    const { error } = registerValidations(req.body);
+    if (error) {
+      req.flash("signupMessage", error.details[0].message);
+      return res.redirect("/users/passwordChange");
+      // return res.status(400).json(error.details[0].message);
+    }
+    if (info) {
+      // res.status(401);
+      req.flash("signupMessage", info.message);
+      return res.redirect("/users/passwordChange");
+      // res.status(401).json(info.message);
+    }
+    if (user) {
+      req.flash("passwordMessage", "User password changed succesfully"),
+        console.log(user);
+      return res.redirect("/dashboard");
+    }
+  })(req, res, next);
+});
+
+
 //Logout
 
 router.get("/logout", (req, res) => {
