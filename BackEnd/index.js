@@ -2,7 +2,8 @@ const express = require("express");
 const expressLayout = require("express-ejs-layouts");
 const flash = require("connect-flash");
 const expressSession = require("express-session");
-const cors = require("cors")
+const methodOveride = require("method-override");
+const cors = require("cors");
 const passport = require("passport");
 
 const app = express();
@@ -12,7 +13,6 @@ require("./config/passport")(passport);
 
 //DB Config
 const CONNECTDB = require("./config/db");
-
 
 //Connect to MongoDB ATLAS
 CONNECTDB();
@@ -26,21 +26,25 @@ app.use(express.json());
 
 //bodyParser
 //bodyParser
-app.use(express.urlencoded({extended:false}));
+app.use(express.urlencoded({ extended: false }));
 
 //public add
+
 app.use(express.static("public"));
 app.use(cors("*"));
+
+//method overide to send a put request
+app.use(methodOveride("_method"));
 
 //Express session
 app.use(
   expressSession({
     secret: "foo",
     resave: false,
-    cookie : {
+    cookie: {
       expires: false,
       // domain: config.cookie.domain
-      },
+    },
     saveUninitialized: false,
   })
 );
@@ -53,14 +57,13 @@ app.use(passport.session());
 app.use(flash());
 
 //Global variables for different messages (maybe add this in a separate file)
-app.use((req, res, next) =>{
-  res.locals.success_msg = req.flash('success_msg');
-  res.locals.error_msg = req.flash('error_msg');
-  res.locals.error = req.flash('error');
-  res.locals.delete_msg = req.flash('delete_msg');
+app.use((req, res, next) => {
+  res.locals.success_msg = req.flash("success_msg");
+  res.locals.error_msg = req.flash("error_msg");
+  res.locals.error = req.flash("error");
+  res.locals.delete_msg = req.flash("delete_msg");
   next();
-  }
-);
+});
 
 /* ROUTES */
 
