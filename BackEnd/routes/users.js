@@ -180,13 +180,6 @@ router.put("/deleteUser", ensureAuthenticated, async (req, res) => {
   }
 });
 
-//Change password page
-router.get("/passwordChange", ensureAuthenticated, (req, res) =>
-  res.render("passwordChange", {
-    user: req.user,
-  })
-);
-
 //Change password with passport
 
 //Logout
