@@ -27,6 +27,7 @@ router.get("/passwordChange", ensureAuthenticated, (req, res) =>
   })
 );
 
+
 //2 factor authenticator
 
 router.get("/setup-2fa", (req, res) => res.render("setup-2fa"));
@@ -87,11 +88,11 @@ router.post("/login", function (req, res, next) {
   })(req, res, next);
 });
 
-//Delete user
-
-router.get("/delete", ensureAuthenticated, (req, res) =>
-  res.render("delete", {
+//Change Password page
+router.get("/passwordChange", ensureAuthenticated, (req, res) =>
+  res.render("passwordChange", {
     user: req.user,
+    message: req.flash("forgotpassMessage"),
   })
 );
 
@@ -126,6 +127,52 @@ router.put("/passwordChange", ensureAuthenticated, async (req, res) => {
     const newUser = await user.save();
     req.flash("dashboardMessage", "password changed successfully");
     return res.redirect("../dashboard");
+    // return res.json(newUser);
+  } catch (error) {
+    res.status(500).json({ msg: "server error" });
+    console.log(error);
+  }
+});
+
+
+//Delete user
+
+router.get("/delete", ensureAuthenticated, (req, res) =>
+  res.render("delete", {
+    user: req.user,
+    message: req.flash("forgotpassMessage"),
+  })
+);
+
+
+//Delete user function
+router.put("/deleteUser", ensureAuthenticated, async (req, res) => {
+  const id = req.user._id;
+  try {
+    const user = await User.findById({ _id: id });
+    if (!user) {
+      req.flash("forgotpassMessage", "user not authorized");
+      return res.status(403).json({ msg: "user not authorized" });
+    }
+    const newDetails = {
+      email: req.body.email,
+      password: req.body.password,
+    };
+
+    const validate = await user.matchPassword(newDetails.password);
+    console.log(validate);
+    if (!validate) {
+      req.flash("forgotpassMessage", "password does not match record");
+      return res.redirect("/users/delete");
+      // return res.json({ msg: "password does not match record" });
+    }
+    user.remove({_id: id},
+      function(err){
+          if(err) res.json(err);
+          else  req.flash("welcomeMessage", "user deleted successfully");
+          return res.redirect("/users/login");
+        });
+
     // return res.json(newUser);
   } catch (error) {
     res.status(500).json({ msg: "server error" });
