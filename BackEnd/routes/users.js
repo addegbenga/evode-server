@@ -2,12 +2,25 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const User = require("../models/User");
+const nodemailer = require("nodemailer");
 const {
   loginValidations,
   registerValidations,
   changePasswordValidation,
 } = require("../config/validation");
 const { ensureAuthenticated, forwardAuthenticated } = require("../config/auth");
+
+//Email tester site
+let transport = nodemailer.createTransport({
+    host: 'smtp.mailtrap.io',
+    port: 2525,
+    auth: {
+      user: "e4ce1728960690",
+      pass: "8664c19d1f8ea9"
+    }
+});
+
+
 
 //Login
 router.get("/login", (req, res) =>
@@ -41,19 +54,19 @@ router.post("/register", function (req, res, next) {
     const { error } = registerValidations(req.body);
     if (error) {
       req.flash("signupMessage", error.details[0].message);
-      // return res.redirect("/users/register");
-      return res.status(400).json(error.details[0].message);
+      return res.redirect("/users/register");
+      //return res.status(400).json(error.details[0].message);
     }
     if (info) {
       // res.status(401);
       req.flash("signupMessage", info.message);
-      // return res.redirect("/users/register");
-      return res.status(401).json(info.message);
+      return res.redirect("/users/register");
+      //return res.status(401).json(info.message);
     }
     if (user) {
       req.flash("loginMessage", "User created succesfully you can now login"),
         console.log(user);
-      // return res.redirect("/users/login");
+       return res.redirect("/users/login");
     }
   })(req, res, next);
 });
@@ -83,6 +96,22 @@ router.post("/login", function (req, res, next) {
         return next(err);
       }
       // return res.json(user);
+
+      //Email confirmation 
+      const message = {
+          from: 'elonmusk@tesla.com', // Sender address
+          to: req.body.email,         // List of recipients
+          subject: 'Loggin test', // Subject line
+          text: 'You have logged in your account!' // Plain text body
+      };
+      transport.sendMail(message, function(err, info) {
+          if (err) {
+            console.log(err)
+          } else {
+            console.log(info);
+          }
+      });
+
       return res.redirect("../dashboard");
     });
   })(req, res, next);
