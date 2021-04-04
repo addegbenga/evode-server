@@ -35,14 +35,14 @@ router.post("/register", function (req, res, next) {
     { session: false },
     function (err, user, info) {
       if (err) {
-        return res.status(500).json({ error: err });      
+        return res.json({ error: err });
       }
       const { error } = registerValidations(req.body);
       if (error) {
-        return res.status(400).json({ msg: error.details[0].message });  
-      }                           
-      if (info) {                  
-        return res.status(401).json({ msg: info.message });
+        return res.json({ error: error.details[0].message });
+      }
+      if (info) {
+        return res.json({ msg: info.message });
       }
       if (user) {
         return res.json({ msg: "user created succesfully", data: user });
@@ -56,24 +56,24 @@ router.post("/register", function (req, res, next) {
 router.post("/login", function (req, res, next) {
   passport.authenticate(
     "login",
-    { session: false },
+    // { session: false },
     function (err, user, info) {
       console.log(req.body);
       if (err) {
-        return res.json({ error: err });
+        return res.json({ error: err.message });
       }
       const { error } = loginValidations(req.body);
       if (error) {
-        return res.status(400).json({ error: error.details[0].message });
+        return res.json({ error: error.details[0].message });
       }
       if (info) {
-        return res.status(400).json({
-          error: info,
+        return res.json({
+          error: info.message,
         });
       }
       req.logIn(user, function (err) {
         if (err) {
-          return res.status(500).json({ error: err });
+          return res.json({ error: err });
         }
         return sendTokenResponse(user, 200, res);
       });

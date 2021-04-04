@@ -12,7 +12,7 @@ module.exports = function (passport) {
         passwordField: "password",
         passReqToCallback: true,
       },
-      async (req, email, password, done, info) => {
+      async (req, email, password, done) => {
         try {
           let user = await User.findOne({ email: email });
           if (user) {
