@@ -67,8 +67,13 @@ app.use((req, res, next) => {
 
 /* ROUTES */
 
+
+//routes to test api and view engine
 app.use("/", require("./routes/index"));
 app.use("/users", require("./routes/users"));
 
-const port = process.env.PORT || 3000; //port setting
+//routes to test api for json 
+app.use("/auth", require("./routes2/auth"));
+
+const port = process.env.PORT || 5000; //port setting
 app.listen(port, () => console.log("App listening on port " + port));
