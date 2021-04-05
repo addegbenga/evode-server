@@ -42,7 +42,7 @@ router.post("/register", function (req, res, next) {
         return res.json({ error: error.details[0].message });
       }
       if (info) {
-        return res.json({ msg: info.message });
+        return res.json({ error: info.message });
       }
       if (user) {
         return res.json({ msg: "user created succesfully", data: user });

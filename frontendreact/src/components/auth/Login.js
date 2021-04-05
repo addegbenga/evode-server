@@ -1,59 +1,53 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import google from "../../img/google.svg";
-import { Link } from "react-router-dom";
-import { api } from "../../utils/apiUrl";
-import axios from "axios";
+import { Link, Redirect } from "react-router-dom";
+import { authContext } from "../../context/authContext";
 
-
-export default function Login() {
+export default function Login(props) {
+  const { isAuthenticated, login, error, dispatch } = useContext(authContext);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const [errors, setErrors] = useState(false);
-
   const { email, password } = formData;
 
   const handleOnChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleOnSubmit = async (e) => {
+  const handleOnSubmit = (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post(`${api}/auth/login`, {
-        email,
-        password,
-      });
-      console.log(response);
-      const { data } = response;
-      if (data.error) {
-        setErrors(data.error);
-      }
-      console.log(data);
-    } catch (error) {
-      // login(email, password);
-      // loginUser(form);
-      // props.history.push("/");
+    login(email, password);
 
-      console.log(error);
-    }
     setFormData({
       email: "",
       password: "",
     });
   };
+  let referer;
+  if (props.location.state !== undefined) {
+    referer = props.location.state.referer;
+  } else {
+    referer = "/";
+  }
+
+  if (isAuthenticated) {
+    return <Redirect to={referer} />;
+  }
+
   return (
     <div className="login-container">
-    
       <div className="login-wrapper">
         <h1>Sign up</h1>
         <p>
           Dont have an account ? <Link to="/register"> Register</Link>
         </p>
-        {errors && (
+        {error && (
           <div className="error-style">
-            {errors} <span onClick={() => setErrors("")}>X</span>
+            {error}{" "}
+            <span onClick={() => dispatch({ type: "CLEAR_ERROR" })} >
+              X
+            </span>
           </div>
         )}
         <div className="login-inner">

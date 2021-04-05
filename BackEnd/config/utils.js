@@ -12,7 +12,7 @@ const sendTokenResponse = (user, statuscode, res) => {
   }
 
   res.status(statuscode).cookie("token", token, options).json({
-    success: true,
+    msg: "woah valid credentials",
     data: user,
     token,
   });

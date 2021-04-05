@@ -4,13 +4,14 @@ import google from "../../img/google.svg";
 import { api } from "../../utils/apiUrl";
 import axios from "axios";
 
-export default function Register() {
+export default function Register(props) {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     name: "",
   });
   const [errors, setErrors] = useState(false);
+  const [resp, setResp] = useState(false);
 
   const { email, password, name } = formData;
 
@@ -30,6 +31,11 @@ export default function Register() {
       const { data } = response;
       if (data.error) {
         setErrors(data.error);
+        setResp("");
+      } else {
+        setErrors("");
+        setResp(data.msg);
+        setTimeout(() => props.history.push("/login"), 2000);
       }
       console.log(data);
     } catch (error) {
@@ -53,10 +59,16 @@ export default function Register() {
         <p>
           Already got an account ? <Link to="/login"> Login</Link>
         </p>
-        {errors && (
+        {errors ? (
           <div className="error-style">
             {errors} <span onClick={() => setErrors("")}>X</span>
           </div>
+        ) : (
+          resp && (
+            <div className="error-style">
+              {resp} <span onClick={() => setErrors("")}>X</span>
+            </div>
+          )
         )}
         <div className="login-inner">
           <div className="form-control">
