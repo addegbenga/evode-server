@@ -8,6 +8,7 @@ export const initialState = {
   token: localStorage.getItem("token"),
   loading: null,
   error: null,
+  successmsg: null,
   user: null,
   isAuthenticated: false,
 };
@@ -54,6 +55,30 @@ export default function AuthContextProvider(props) {
       console.log(error);
     }
   };
+  //chaneg password
+  const changePassword = async (currentPassword, newPassword) => {
+    try {
+      const response = await axios.put(`${api}/auth/passwordChange`, {
+        currentPassword,
+        newPassword,
+      });
+      const { data } = response;
+      if (data.error) {
+        dispatch({
+          type: "ERROR_USER",
+          payload: data.error,
+        });
+      } else {
+        dispatch({
+          type: "CHANGE_PASSWORD",
+          payload: data,
+        });
+        console.log(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <authContext.Provider
@@ -62,8 +87,10 @@ export default function AuthContextProvider(props) {
         loading: state.loading,
         isAuthenticated: state.isAuthenticated,
         user: state.user,
-        error:state.error,
+        error: state.error,
+        successmsg: state.successmsg,
         dispatch,
+        changePassword,
         loadUser,
         login,
       }}

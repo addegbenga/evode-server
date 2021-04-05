@@ -1,10 +1,12 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import google from "../../img/google.svg";
 import { Link, Redirect } from "react-router-dom";
 import { authContext } from "../../context/authContext";
 
 export default function Login(props) {
-  const { isAuthenticated, login, error, dispatch } = useContext(authContext);
+  const { isAuthenticated, login, error, dispatch} = useContext(
+    authContext
+  );
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -14,6 +16,8 @@ export default function Login(props) {
   const handleOnChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+ 
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
@@ -35,6 +39,7 @@ export default function Login(props) {
     return <Redirect to={referer} />;
   }
 
+
   return (
     <div className="login-container">
       <div className="login-wrapper">
@@ -45,9 +50,7 @@ export default function Login(props) {
         {error && (
           <div className="error-style">
             {error}{" "}
-            <span onClick={() => dispatch({ type: "CLEAR_ERROR" })} >
-              X
-            </span>
+            <span onClick={() => dispatch({ type: "CLEAR_ERROR" })}>X</span>
           </div>
         )}
         <div className="login-inner">

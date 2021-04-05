@@ -1,0 +1,28 @@
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin: auto;
+    min-height: 70vh;
+    background: white;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.08);
+    padding-top: 2rem;
+    align-items: center;
+    h2{
+        font-size: 30px;
+        font-weight: 300;
+    }
+  .dash-btns {
+    display: flex;
+    margin-top: 2rem;
+    button{
+        margin-right: 1rem;
+        background-color: orangered;
+        color: white;
+        padding: 10px;
+        a{
+            color: white;
+        }
+    }
+  }
+}

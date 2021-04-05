@@ -83,25 +83,24 @@ router.post("/login", function (req, res, next) {
 
 //Change password
 
-router.put("/passwordChange", async (req, res) => {
-  const id = req.user._id;
+router.put("/passwordChange", auth, async (req, res) => {
+  const id = req.user.id;
   try {
-    const user = await User.findById({ _id: id });
+    const user = await User.findById(id);
     if (!user) {
-      return res.status(403).json({ msg: "user not authorized" });
+      return res.json({ msg: "user not authorized" });
     }
     const newDetails = {
-      newPassword: req.body.newPassword,
       currentPassword: req.body.currentPassword,
+      newPassword: req.body.newPassword,
     };
     const { error } = changePasswordValidation(newDetails);
     if (error) {
-      return res.json({ msg: error.details[0].message });
+      return res.json({ error: error.details[0].message });
     }
     const validate = await user.matchPassword(newDetails.currentPassword);
-    console.log(validate);
     if (!validate) {
-      return res.json({ msg: "password does not match record" });
+      return res.json({ error: "password does not match record" });
     }
     user.password = req.body.newPassword;
     const newUser = await user.save();
@@ -109,7 +108,7 @@ router.put("/passwordChange", async (req, res) => {
       .status(200)
       .json({ msg: "password changed succesfully", data: newUser });
   } catch (error) {
-    res.status(500).json({ msg: "server error" });
+    res.status(500).json({ error: "server error" });
     console.log(error);
   }
 });
