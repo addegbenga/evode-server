@@ -62,6 +62,7 @@ export default function AuthContextProvider(props) {
         currentPassword,
         newPassword,
       });
+
       const { data } = response;
       if (data.error) {
         dispatch({
@@ -71,6 +72,31 @@ export default function AuthContextProvider(props) {
       } else {
         dispatch({
           type: "CHANGE_PASSWORD",
+          payload: data,
+        });
+        console.log(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  //reset password
+  const forgotPassword = async (email) => {
+    try {
+      const response = await axios.post(`${api}/auth/forgotpassword`, {
+        email,
+      });
+
+      const { data } = response;
+      console.log(data)
+      if (data.error) {
+        dispatch({
+          type: "ERROR_USER",
+          payload: data.error,
+        });
+      } else {
+        dispatch({
+          type: "SUCCESS_MSG",
           payload: data,
         });
         console.log(data);
@@ -91,6 +117,7 @@ export default function AuthContextProvider(props) {
         successmsg: state.successmsg,
         dispatch,
         changePassword,
+        forgotPassword,
         loadUser,
         login,
       }}

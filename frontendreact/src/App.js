@@ -8,9 +8,10 @@ import Notfound from "./components/errorPage/NotFound";
 import { Switch, Route } from "react-router-dom";
 import { authContext } from "./context/authContext";
 import ChangePassword from "./components/auth/ChangePassword";
+import ForgotPassword from "./components/auth/ForgotPassword";
+import Resetpassword from "./components/auth/Resetpassword";
 export default function App() {
-  const { loadUser, isAuthenticated} = useContext(authContext);
-
+  const { loadUser, isAuthenticated } = useContext(authContext);
 
   useEffect(() => {
     loadUser();
@@ -25,6 +26,8 @@ export default function App() {
           path="/changepassword"
           component={ChangePassword}
         />
+        <Route exact path="/forgotpassword" component={ForgotPassword} />
+        <Route exact path="/resetpassword/:id" component={Resetpassword} />
         <PrivateRoutes exact path="/dashboard" component={Userdashboard} />
         <Route exact path="/" component={Home} />
         <Route exact path="/login" component={Login} />

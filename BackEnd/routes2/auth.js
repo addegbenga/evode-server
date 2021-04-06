@@ -19,7 +19,7 @@ router.get("/me", auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
     if (!user) {
-      return res.json({ msg: "user not found" });
+      return res.json({ error: "user not found" });
     }
     res.json(user);
   } catch (error) {
@@ -88,7 +88,7 @@ router.put("/passwordChange", auth, async (req, res) => {
   try {
     const user = await User.findById(id);
     if (!user) {
-      return res.json({ msg: "user not authorized" });
+      return res.json({ error: "user not authorized" });
     }
     const newDetails = {
       currentPassword: req.body.currentPassword,
@@ -151,7 +151,7 @@ router.put("/deleteUser", async (req, res) => {
 router.post("/forgotpassword", async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
-    return res.status(400).json({ msg: "no user with that email" });
+    return res.json({ error: "no user with that email" });
   }
   const resetToken = user.getResetPasswordToken();
   console.log(resetToken);
@@ -162,27 +162,34 @@ router.post("/forgotpassword", async (req, res) => {
   // await user.save();
 
   //create reset url
-  const resetUrl = `${req.protocol}://${req.get(
-    "host"
-  )}/users/resetpassword/${resetToken}`;
+  // const resetUrl = `${req.protocol}://${req.get(
+  //   "host"
+  // )}/auth/resetpassword/${resetToken}`;
+  const resetUrl = `${process.env.CLIENT_URL}/resetpassword/${resetToken}`;
   console.log(resetUrl);
   const message = `you are receiving this email cux you requsted for a forgot password: \n\n   ${resetUrl}`;
 
   try {
-    await sendEmail({
-      email: user.email,
-      subject: "show link",
-
-      message: message,
-    });
-    res.status(200).send({ success: true, data: "email sent" });
+    await sendEmail(
+      user.email,
+      "Password Reset Request",
+      {
+        name: user.name,
+        link: resetUrl,
+      },
+      "../config/templates/emailMessage.ejs"
+    );
+    return res.json({ msg: "Email sent successfully, check your ibox" });
   } catch (error) {
     console.log(error);
     (user.resetPasswordToken = undefined),
       (user.resetPasswordExpire = undefined);
     await user.save({ validateBeforeSave: false });
 
-    return res.status(500).json({ error: "cant send email" });
+    return res.json({
+      error:
+        "cant send email at the moment make sure are connected to the intenet ",
+    });
   }
 });
 

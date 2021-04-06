@@ -4,9 +4,7 @@ import { Link, Redirect } from "react-router-dom";
 import { authContext } from "../../context/authContext";
 
 export default function Login(props) {
-  const { isAuthenticated, login, error, dispatch} = useContext(
-    authContext
-  );
+  const { isAuthenticated, login, error, dispatch } = useContext(authContext);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -17,16 +15,12 @@ export default function Login(props) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
- 
-
   const handleOnSubmit = (e) => {
     e.preventDefault();
+    // if (!error) {
     login(email, password);
-
-    setFormData({
-      email: "",
-      password: "",
-    });
+    props.history.push("/dashboard");
+    // }
   };
   let referer;
   if (props.location.state !== undefined) {
@@ -38,7 +32,6 @@ export default function Login(props) {
   if (isAuthenticated) {
     return <Redirect to={referer} />;
   }
-
 
   return (
     <div className="login-container">
@@ -82,7 +75,9 @@ export default function Login(props) {
           </div>
           <div className="terms-container">
             {/* <input type="checkbox" name="terms"></input> */}
-            <span>Forgot password ?</span>
+            <span>
+              <Link to="/forgotpassword">Forgot password ?</Link>
+            </span>
           </div>
           <div className="login-btn-container">
             <button className="login-btn" onClick={handleOnSubmit}>

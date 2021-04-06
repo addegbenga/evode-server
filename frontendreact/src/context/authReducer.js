@@ -15,12 +15,18 @@ export const authReducer = (state, action) => {
         ...action.payload,
         isAuthenticated: true,
         loading: false,
+        error: null,
         user: null,
       };
     case "CHANGE_PASSWORD":
       return {
         ...state,
         ...action.payload,
+        successmsg: action.payload.msg,
+      };
+    case "SUCCESS_MSG":
+      return {
+        ...state,
         successmsg: action.payload.msg,
       };
     case "LOGOUT":

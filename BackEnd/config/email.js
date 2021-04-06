@@ -1,6 +1,9 @@
 const nodemailer = require("nodemailer");
+const ejs = require("ejs");
+const fs = require("fs");
+const path = require("path");
 // async..await is not allowed in global scope, must use a wrapper
-const sendEmail = async (options) => {
+const sendEmail = async (email, subject, payload, template) => {
   // create reusable transporter object using the default SMTP transport
 
   const transporter = nodemailer.createTransport({
@@ -12,16 +15,27 @@ const sendEmail = async (options) => {
       pass: process.env.MAIL_PASSWORD, // generated ethereal password
     },
   });
-
+const source = fs.readFileSync(path.join(__dirname, template), "utf8");
+const compiledTemplate = ejs.compile(source)
   // send mail with defined transport object
   const message = {
     // from: `${FROM_NAME} <${FROM_EMAIL}>`, // sender address
     from: `${process.env.MAIL_NAME} <${process.env.MAIL_FROM_EMAIL}>`, // sender address
-    to: options.email, // list of receivers
-    subject: options.subject, // Subject line
-    text: options.message, // plain text body
+    to: email, // list of receivers
+    subject: subject, // Subject line
+    html:compiledTemplate(payload)
     // html body
   };
+
+  //send email
+
+  // transporter.sendMail(options(), (error, info=>{
+  //   if(error){
+  //     return error;
+  //   }else{
+  //     return res.s
+  //   }
+  // }))
 
   const info = await transporter.sendMail(message);
 
