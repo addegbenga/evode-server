@@ -238,6 +238,7 @@ router.put("/resetpassword/:resettoken", async (req, res) => {
     }
     //set the new password
     user.password = req.body.password;
+    
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
 

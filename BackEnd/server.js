@@ -74,6 +74,7 @@ app.use("/users", require("./routes/users"));
 
 //routes to test api for json 
 app.use("/auth", require("./routes2/auth"));
+app.use("/2fa", require("./routes2/2fa"));
 
 const port = process.env.PORT || 5000; //port setting
 app.listen(port, () => console.log("App listening on port " + port));

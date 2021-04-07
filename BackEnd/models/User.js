@@ -13,6 +13,12 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
     },
+    tempSecret: {
+      type: Object,
+    },
+    secret: {
+      type: Object,
+    },
     resetPasswordToken: String,
     resetPasswordExpire: Date,
   },
