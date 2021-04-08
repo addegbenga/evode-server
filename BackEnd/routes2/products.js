@@ -1,7 +1,7 @@
 const express = require("express");
 const User = require("../models/User");
 const Product = require("../models/Products");
-const { auth } = require("../config/verify");
+const { auth, protect } = require("../config/verify");
 const router = express.Router();
 
 //get logged in user
@@ -25,17 +25,17 @@ router.get("/all", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     let product = await Product.findById(req.params.id);
-    if(!product){
-      return res.json({error:"no product found"})
+    if (!product) {
+      return res.json({ error: "no product found" });
     }
-    return res.json({msg:"success",data:product})
+    return res.json({ msg: "success", data: product });
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 });
 
 //route to create a product by a user
-router.post("/add", auth, async (req, res) => {
+router.post("/add", auth, protect("role1"), async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
     if (!user) {
@@ -61,7 +61,7 @@ router.post("/add", auth, async (req, res) => {
 });
 
 //routes to edit products
-router.put("/edit/:id", auth, async (req, res) => {
+router.put("/edit/:id", auth, protect("role1"), async (req, res) => {
   const fieldToUpdate = {
     productImage: req.body.productImage,
     productName: req.body.productName,
