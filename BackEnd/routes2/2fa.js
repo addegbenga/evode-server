@@ -56,14 +56,15 @@ router.post("/verify", auth, async (req, res) => {
     if (verified) {
       const fieldToUpdate = {
         secret: user.tempSecret,
+        hookEnabled: false,
       };
       user = await User.findByIdAndUpdate(req.user.id, fieldToUpdate, {
         new: true,
         runValidators: true,
       });
-      user.hookEnabled = false;
       user.tempSecret = undefined;
       await user.save();
+
       return res.json({ msg: "verification succesfull" });
     } else {
       return res.json({ error: "verification failed" });

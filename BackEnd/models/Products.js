@@ -19,13 +19,15 @@ const productSchema = new mongoose.Schema(
       type: String,
     },
     productQuantity: {
-      type: String,
+      type: Number,
+      default: 0,
     },
     productDescription: {
       type: String,
     },
     ProductSold: {
       type: Number,
+      default: 0,
     },
     productShipping: {
       type: String,
