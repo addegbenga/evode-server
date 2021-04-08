@@ -19,7 +19,7 @@ router.get("/me", auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
     if (!user) {
-      return res.json({ msg: "user not found" });
+      return res.json({ error: "user not found" });
     }
     res.json(user);
   } catch (error) {
@@ -83,25 +83,24 @@ router.post("/login", function (req, res, next) {
 
 //Change password
 
-router.put("/passwordChange", async (req, res) => {
-  const id = req.user._id;
+router.put("/passwordChange", auth, async (req, res) => {
+  const id = req.user.id;
   try {
-    const user = await User.findById({ _id: id });
+    const user = await User.findById(id);
     if (!user) {
-      return res.status(403).json({ msg: "user not authorized" });
+      return res.json({ error: "user not authorized" });
     }
     const newDetails = {
-      newPassword: req.body.newPassword,
       currentPassword: req.body.currentPassword,
+      newPassword: req.body.newPassword,
     };
     const { error } = changePasswordValidation(newDetails);
     if (error) {
-      return res.json({ msg: error.details[0].message });
+      return res.json({ error: error.details[0].message });
     }
     const validate = await user.matchPassword(newDetails.currentPassword);
-    console.log(validate);
     if (!validate) {
-      return res.json({ msg: "password does not match record" });
+      return res.json({ error: "password does not match record" });
     }
     user.password = req.body.newPassword;
     const newUser = await user.save();
@@ -109,7 +108,7 @@ router.put("/passwordChange", async (req, res) => {
       .status(200)
       .json({ msg: "password changed succesfully", data: newUser });
   } catch (error) {
-    res.status(500).json({ msg: "server error" });
+    res.status(500).json({ error: "server error" });
     console.log(error);
   }
 });
@@ -152,7 +151,7 @@ router.put("/deleteUser", async (req, res) => {
 router.post("/forgotpassword", async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
-    return res.status(400).json({ msg: "no user with that email" });
+    return res.json({ error: "no user with that email" });
   }
   const resetToken = user.getResetPasswordToken();
   console.log(resetToken);
@@ -163,27 +162,34 @@ router.post("/forgotpassword", async (req, res) => {
   // await user.save();
 
   //create reset url
-  const resetUrl = `${req.protocol}://${req.get(
-    "host"
-  )}/users/resetpassword/${resetToken}`;
+  // const resetUrl = `${req.protocol}://${req.get(
+  //   "host"
+  // )}/auth/resetpassword/${resetToken}`;
+  const resetUrl = `${process.env.CLIENT_URL}/resetpassword/${resetToken}`;
   console.log(resetUrl);
   const message = `you are receiving this email cux you requsted for a forgot password: \n\n   ${resetUrl}`;
 
   try {
-    await sendEmail({
-      email: user.email,
-      subject: "show link",
-
-      message: message,
-    });
-    res.status(200).send({ success: true, data: "email sent" });
+    await sendEmail(
+      user.email,
+      "Password Reset Request",
+      {
+        name: user.name,
+        link: resetUrl,
+      },
+      "../config/templates/emailMessage.ejs"
+    );
+    return res.json({ msg: "Email sent successfully, check your ibox" });
   } catch (error) {
     console.log(error);
     (user.resetPasswordToken = undefined),
       (user.resetPasswordExpire = undefined);
     await user.save({ validateBeforeSave: false });
 
-    return res.status(500).json({ error: "cant send email" });
+    return res.json({
+      error:
+        "cant send email at the moment make sure are connected to the intenet ",
+    });
   }
 });
 
@@ -232,6 +238,7 @@ router.put("/resetpassword/:resettoken", async (req, res) => {
     }
     //set the new password
     user.password = req.body.password;
+    
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
 

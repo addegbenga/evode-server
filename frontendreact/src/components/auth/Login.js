@@ -1,6 +1,6 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext} from "react";
 import google from "../../img/google.svg";
-import { Link, Redirect } from "react-router-dom";
+import { Link, Redirect} from "react-router-dom";
 import { authContext } from "../../context/authContext";
 
 export default function Login(props) {
@@ -18,17 +18,12 @@ export default function Login(props) {
   const handleOnSubmit = (e) => {
     e.preventDefault();
     login(email, password);
-
-    setFormData({
-      email: "",
-      password: "",
-    });
   };
   let referer;
   if (props.location.state !== undefined) {
-    referer = props.location.state.referer;
+    referer = props.location.state.from;
   } else {
-    referer = "/";
+    referer = "/dashboard";
   }
 
   if (isAuthenticated) {
@@ -45,9 +40,7 @@ export default function Login(props) {
         {error && (
           <div className="error-style">
             {error}{" "}
-            <span onClick={() => dispatch({ type: "CLEAR_ERROR" })} >
-              X
-            </span>
+            <span onClick={() => dispatch({ type: "CLEAR_ERROR" })}>X</span>
           </div>
         )}
         <div className="login-inner">
@@ -79,7 +72,9 @@ export default function Login(props) {
           </div>
           <div className="terms-container">
             {/* <input type="checkbox" name="terms"></input> */}
-            <span>Forgot password ?</span>
+            <span>
+              <Link to="/forgotpassword">Forgot password ?</Link>
+            </span>
           </div>
           <div className="login-btn-container">
             <button className="login-btn" onClick={handleOnSubmit}>

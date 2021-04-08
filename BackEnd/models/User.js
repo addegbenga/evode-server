@@ -13,6 +13,22 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
     },
+    role: {
+      type: String,
+      enum: ["role1", "role2"],
+      required: true,
+      default: "role2",
+    },
+    tempSecret: {
+      type: Object,
+    },
+    secret: {
+      type: Object,
+    },
+    hookEnabled: {
+      type: Boolean,
+      default: true,
+    },
     resetPasswordToken: String,
     resetPasswordExpire: Date,
   },
@@ -23,8 +39,12 @@ const UserSchema = new mongoose.Schema(
 
 //Encrypt password using bcrypt
 UserSchema.pre("save", async function (next) {
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
+  if (this.hookEnabled) {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+  } else {
+    next();
+  }
 });
 
 //Password matcher

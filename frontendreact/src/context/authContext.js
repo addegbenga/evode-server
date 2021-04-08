@@ -6,10 +6,11 @@ import axios from "axios";
 
 export const initialState = {
   token: localStorage.getItem("token"),
-  loading: null,
+  loading: true,
   error: null,
+  successmsg: null,
   user: null,
-  isAuthenticated: false,
+  isAuthenticated: null,
 };
 
 export const authContext = createContext(initialState);
@@ -54,6 +55,31 @@ export default function AuthContextProvider(props) {
       console.log(error);
     }
   };
+  //reset password
+  const forgotPassword = async (email) => {
+    try {
+      const response = await axios.post(`${api}/auth/forgotpassword`, {
+        email,
+      });
+
+      const { data } = response;
+      console.log(data);
+      if (data.error) {
+        dispatch({
+          type: "ERROR_USER",
+          payload: data.error,
+        });
+      } else {
+        dispatch({
+          type: "SUCCESS_MSG",
+          payload: data,
+        });
+        console.log(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <authContext.Provider
@@ -62,8 +88,10 @@ export default function AuthContextProvider(props) {
         loading: state.loading,
         isAuthenticated: state.isAuthenticated,
         user: state.user,
-        error:state.error,
+        error: state.error,
+        successmsg: state.successmsg,
         dispatch,
+        forgotPassword,
         loadUser,
         login,
       }}

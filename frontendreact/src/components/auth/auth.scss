@@ -11,6 +11,9 @@
     cursor: pointer;
   }
 }
+.success-style {
+  border: 1px solid green;
+}
 .login-container {
   min-height: 100vh;
   background: white;
@@ -75,6 +78,11 @@
       .terms-container {
         input {
           margin-right: 0.7rem;
+        }
+        span{
+          a{
+            color: rgba(0, 0, 0, 0.534);
+          }
         }
       }
       .login-btn-container {
