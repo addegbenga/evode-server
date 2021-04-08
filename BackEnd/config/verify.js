@@ -12,7 +12,6 @@ const auth = async (req, res, next) => {
 
   // Verify token
   try {
-   
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = await User.findById(decoded._id);
     console.log(req.user);
@@ -23,4 +22,17 @@ const auth = async (req, res, next) => {
   }
 };
 
-module.exports = { auth };
+// grant access to specific roles
+
+const protect = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({
+        msg: req.user.role + " cant perform this operation",
+      });
+    }
+    next();
+  };
+};
+
+module.exports = { auth, protect };

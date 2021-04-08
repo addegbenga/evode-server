@@ -3,7 +3,7 @@ import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import Home from "./components/landingpage/Home";
 import PrivateRoutes from "./utils/PrivateRoutes";
-import { Userdashboard } from "./components/dashboard/Userdashboard";
+import Userdashboard from "./components/dashboard/Userdashboard";
 import Notfound from "./components/errorPage/NotFound";
 import { Switch, Route } from "react-router-dom";
 import { authContext } from "./context/authContext";
@@ -22,13 +22,16 @@ export default function App() {
     <>
       <Switch>
         <PrivateRoutes
-          exact
           path="/changepassword"
           component={ChangePassword}
         />
         <Route exact path="/forgotpassword" component={ForgotPassword} />
         <Route exact path="/resetpassword/:id" component={Resetpassword} />
-        <PrivateRoutes exact path="/dashboard" component={Userdashboard} />
+        <PrivateRoutes
+          exact
+          path="/dashboard"
+          component={Userdashboard}
+        />
         <Route exact path="/" component={Home} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/register" component={Register} />

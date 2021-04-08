@@ -6,11 +6,11 @@ import axios from "axios";
 
 export const initialState = {
   token: localStorage.getItem("token"),
-  loading: null,
+  loading: true,
   error: null,
   successmsg: null,
   user: null,
-  isAuthenticated: false,
+  isAuthenticated: null,
 };
 
 export const authContext = createContext(initialState);
@@ -55,31 +55,6 @@ export default function AuthContextProvider(props) {
       console.log(error);
     }
   };
-  //chaneg password
-  const changePassword = async (currentPassword, newPassword) => {
-    try {
-      const response = await axios.put(`${api}/auth/passwordChange`, {
-        currentPassword,
-        newPassword,
-      });
-
-      const { data } = response;
-      if (data.error) {
-        dispatch({
-          type: "ERROR_USER",
-          payload: data.error,
-        });
-      } else {
-        dispatch({
-          type: "CHANGE_PASSWORD",
-          payload: data,
-        });
-        console.log(data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
   //reset password
   const forgotPassword = async (email) => {
     try {
@@ -88,7 +63,7 @@ export default function AuthContextProvider(props) {
       });
 
       const { data } = response;
-      console.log(data)
+      console.log(data);
       if (data.error) {
         dispatch({
           type: "ERROR_USER",
@@ -116,7 +91,6 @@ export default function AuthContextProvider(props) {
         error: state.error,
         successmsg: state.successmsg,
         dispatch,
-        changePassword,
         forgotPassword,
         loadUser,
         login,

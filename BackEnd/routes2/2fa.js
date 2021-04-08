@@ -3,6 +3,7 @@ const router = express.Router();
 const passport = require("passport");
 const User = require("../models/User");
 const { auth } = require("../config/verify");
+const qrcode = require("qrcode");
 const crypto = require("crypto");
 const speakeasy = require("speakeasy");
 
@@ -25,7 +26,9 @@ router.post("/activate", auth, async (req, res) => {
       new: true,
       runValidators: true,
     });
-    res.json({ success: true, data: user });
+
+    const barcode = await qrcode.toDataURL(user.tempSecret.otpauth_url);
+    res.json({ success: true, data: user.tempSecret.base32, url: barcode });
   } catch (error) {
     console.log(error);
   }
@@ -41,6 +44,7 @@ router.post("/verify", auth, async (req, res) => {
     if (!user) {
       return res.json({ error: "User not authorized" });
     }
+
     const { base32: secret } = user.tempSecret;
     console.log(secret);
     const verified = speakeasy.totp.verify({
@@ -57,8 +61,9 @@ router.post("/verify", auth, async (req, res) => {
         new: true,
         runValidators: true,
       });
+      user.hookEnabled = false;
       user.tempSecret = undefined;
-      await user.save({ validateBeforeSave: false });
+      await user.save();
       return res.json({ msg: "verification succesfull" });
     } else {
       return res.json({ error: "verification failed" });
@@ -74,7 +79,9 @@ router.post("/validate", auth, async (req, res) => {
   const { token } = req.body;
   try {
     let user = await User.findById(req.user.id);
-    console.log(user.secret);
+    if (!user) {
+      return res.json({ error: "User not authorized" });
+    }
 
     const { base32: secret } = user.secret;
 

@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import { authContext } from "../../context/authContext";
 
-export function Userdashboard() {
+function Userdashboard() {
   const { user, dispatch } = useContext(authContext);
 
   return (
@@ -22,6 +22,13 @@ export function Userdashboard() {
           <Link to="/changepassword">change password</Link>
         </button>
       </div>
+      {/* <form>
+        <input></input>
+      </form> */}
     </div>
   );
 }
+
+
+
+export default withRouter(Userdashboard);

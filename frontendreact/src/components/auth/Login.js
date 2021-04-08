@@ -1,6 +1,6 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext} from "react";
 import google from "../../img/google.svg";
-import { Link, Redirect } from "react-router-dom";
+import { Link, Redirect} from "react-router-dom";
 import { authContext } from "../../context/authContext";
 
 export default function Login(props) {
@@ -17,16 +17,13 @@ export default function Login(props) {
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
-    // if (!error) {
     login(email, password);
-    props.history.push("/dashboard");
-    // }
   };
   let referer;
   if (props.location.state !== undefined) {
-    referer = props.location.state.referer;
+    referer = props.location.state.from;
   } else {
-    referer = "/";
+    referer = "/dashboard";
   }
 
   if (isAuthenticated) {
