@@ -35,7 +35,7 @@ router.get("/:id", async (req, res) => {
 });
 
 //route to create a product by a user
-router.post("/add", auth, protect("role1"), async (req, res) => {
+router.post("/add", auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
     if (!user) {
@@ -52,6 +52,8 @@ router.post("/add", auth, protect("role1"), async (req, res) => {
       productQuantity: req.body.productQuantity,
       productDescription: req.body.productDescription,
       productSold: req.body.productSold,
+      shippingMethod: req.body.shippingMethod,
+      shippingZone: req.body.shippingZone,
     });
     const response = await newProduct.save();
     return res.json({ msg: "product created succesfully", data: response });
@@ -61,7 +63,7 @@ router.post("/add", auth, protect("role1"), async (req, res) => {
 });
 
 //routes to edit products
-router.put("/edit/:id", auth, protect("role1"), async (req, res) => {
+router.put("/edit/:id", auth, async (req, res) => {
   const fieldToUpdate = {
     productImage: req.body.productImage,
     productName: req.body.productName,
@@ -70,6 +72,8 @@ router.put("/edit/:id", auth, protect("role1"), async (req, res) => {
     productQuantity: req.body.productQuantity,
     productDescription: req.body.productDescription,
     productSold: req.body.productSold,
+    shippingMethod: req.body.shippingMethod,
+    shippingZone: req.body.shippingZone,
   };
   try {
     let user = await User.findById(req.user.id);

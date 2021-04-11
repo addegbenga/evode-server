@@ -1,11 +1,11 @@
 import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { authContext } from "../../context/authContext";
 
 export default function ForgotPassword() {
-  const { successmsg, error, forgotPassword, dispatch } = useContext(
-    authContext
-  );
+  const { error, forgotPassword, dispatch } = useContext(authContext);
   const [formData, setFormData] = useState({
     email: "",
   });
@@ -19,7 +19,7 @@ export default function ForgotPassword() {
     e.preventDefault();
     console.log(email);
     forgotPassword(email);
-
+  
     setFormData({
       email: "",
     });
@@ -30,19 +30,13 @@ export default function ForgotPassword() {
         <h1 className="text-center mb-3">
           <i className="fas fa-sign-in-alt"></i> Reset Password
         </h1>
-        {error ? (
+        {error && (
           <div className="error-style">
             {error}{" "}
             <span onClick={() => dispatch({ type: "CLEAR_ERROR" })}>X</span>
           </div>
-        ) : (
-          successmsg && (
-            <div className="error-style success-style">
-              {successmsg}{" "}
-              <span onClick={() => dispatch({ type: "CLEAR_ERROR" })}>X</span>
-            </div>
-          )
         )}
+        <ToastContainer />
         <form onSubmit={handleOnSubmit}>
           <div className="form-group">
             <label htmlFor="email">Email</label>

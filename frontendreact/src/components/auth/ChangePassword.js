@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { api } from "../../utils/apiUrl";
 
 export default function ChangePassword(props) {
@@ -9,7 +11,6 @@ export default function ChangePassword(props) {
   });
   const { newPassword, currentPassword } = formData;
   const [errorHandle, setHandle] = useState(false);
-  const [successmsg, setSuccess] = useState(false);
 
   const handleOnChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -17,9 +18,7 @@ export default function ChangePassword(props) {
 
   const handleOnSubmit = async (e) => {
     e.preventDefault();
-    // changePassword(currentPassword, newPassword);
     console.log(newPassword, currentPassword);
-
     try {
       const response = await axios.put(`${api}/auth/passwordChange`, {
         currentPassword,
@@ -30,7 +29,11 @@ export default function ChangePassword(props) {
         setHandle(data.error);
         console.log(data.error);
       } else {
-        setSuccess("Password changed successfully");
+        toast("password chnaged succesfully");
+        setFormData({
+          newPassword: "",
+          currentPassword: "",
+        });
         console.log(data);
       }
     } catch (error) {
@@ -43,17 +46,12 @@ export default function ChangePassword(props) {
       <div>
         <div>
           <h1>Change your password</h1>
-          {errorHandle ? (
+          {errorHandle && (
             <div className="error-style">
               {errorHandle} <span onClick={() => setHandle("")}>X</span>
             </div>
-          ) : (
-            successmsg && (
-              <div className="error-style success-style">
-                {successmsg} <span onClick={() => setSuccess("")}>X</span>
-              </div>
-            )
           )}
+          <ToastContainer />
           <div>
             <div>
               <label htmlFor="currentPassword" id="currentPassword">

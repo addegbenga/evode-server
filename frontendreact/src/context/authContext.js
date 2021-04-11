@@ -1,6 +1,8 @@
 import React, { createContext, useReducer } from "react";
 import { authReducer } from "./authReducer";
 import { api } from "../utils/apiUrl";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import setAuthToken from "../utils/setAuthToken";
 import axios from "axios";
 
@@ -55,6 +57,32 @@ export default function AuthContextProvider(props) {
       console.log(error);
     }
   };
+  //login user
+  const changePassword = async (currentPassword, newPassword) => {
+    dispatch({
+      type: "SET_LOADER",
+    });
+    try {
+      const response = await axios.put(`${api}/auth/passwordChange`, {
+        currentPassword,
+        newPassword,
+      });
+      const { data } = response;
+      if (data.error) {
+        dispatch({
+          type: "ERROR_USER",
+          payload: data.error,
+        });
+      } else {
+        dispatch({
+          type: "LOGIN_USER",
+          payload: data,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   //reset password
   const forgotPassword = async (email) => {
     try {
@@ -74,7 +102,34 @@ export default function AuthContextProvider(props) {
           type: "SUCCESS_MSG",
           payload: data,
         });
+        toast("wow we just sent you an email ");
+
         console.log(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  //reset password from email link
+  const resetPassword = async (password,id) => {
+    try {
+      const response = await axios.put(`${api}/auth/resetpassword/${id}`, {
+        password,
+      });
+
+      const { data } = response;
+      console.log(data);
+      if (data.error) {
+        dispatch({
+          type: "ERROR_USER",
+          payload: data.error,
+        });
+      } else {
+        dispatch({
+          type: "SUCCESS_MSG",
+          payload: data,
+        });
+        toast("password changed succesfully you can login with your new details ");
       }
     } catch (error) {
       console.log(error);
@@ -94,6 +149,8 @@ export default function AuthContextProvider(props) {
         forgotPassword,
         loadUser,
         login,
+        changePassword,
+        resetPassword
       }}
     >
       {props.children}

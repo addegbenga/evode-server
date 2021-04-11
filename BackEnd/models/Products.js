@@ -25,13 +25,23 @@ const productSchema = new mongoose.Schema(
     productDescription: {
       type: String,
     },
-    ProductSold: {
+    productSold: {
       type: Number,
       default: 0,
     },
+    shippingZone: [
+      {
+        type: String,
+      },
+    ],
     productShipping: {
-      type: String,
+      type: Boolean,
     },
+    shippingMethod: [
+      {
+        type: String,
+      },
+    ],
   },
   {
     timestamps: true,
