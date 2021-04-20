@@ -6,7 +6,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Alegreya Sans", sans-serif;
 }
 body {
   border-left: 1px solid rgba(0, 0, 0, 0.12);
@@ -19,10 +18,10 @@ li {
 a {
   text-decoration: none;
 }
-img {
-  width: 100%;
-  object-fit: cover;
-}
+// img {
+//   width: 20px;
+//   object-fit: cover;
+// }
 button {
   border: none;
   -webkit-appearance: none;

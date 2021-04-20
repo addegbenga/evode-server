@@ -1,0 +1,352 @@
+.error-style {
+  border: 1px solid red;
+  margin-bottom: 0.8rem;
+  padding: 8px;
+  color: #ff7e5f;
+  font-size: 14px;
+  border-radius: 5px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.error-style:hover {
+  cursor: pointer;
+}
+
+.success-style {
+  border: 1px solid green;
+}
+
+.login-container {
+  min-height: 100vh;
+  background: white;
+  background: #ff7e5f;
+  /* fallback for old browsers */
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: -webkit-gradient(linear, left top, right top, from(#feb47b), to(#ff7e5f));
+  background: linear-gradient(to right, #feb47b, #ff7e5f);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.login-container .login-wrapper {
+  background: white;
+  padding-left: 2rem;
+  width: 90%;
+  padding-right: 2rem;
+  -webkit-box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.08);
+          box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.08);
+  padding-bottom: 1rem;
+}
+
+.login-container .login-wrapper h1 {
+  padding-top: 1rem;
+  padding-bottom: 0.5rem;
+  font-size: 28px;
+  font-weight: 400;
+}
+
+.login-container .login-wrapper p {
+  padding-bottom: 2.5rem;
+  font-size: 14px;
+  color: #8692a6;
+}
+
+.login-container .login-wrapper .login-inner {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.login-container .login-wrapper .login-inner .form-control {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.login-container .login-wrapper .login-inner .form-control label {
+  padding-bottom: 0.3rem;
+  font-size: 14px;
+}
+
+.login-container .login-wrapper .login-inner .form-control input {
+  margin-bottom: 1.5rem;
+  padding: 10px;
+  background: #ffffff;
+  border: 1px solid #8692a6;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 6px;
+}
+
+.login-container .login-wrapper .login-inner .form-control input:focus {
+  outline: red;
+  border: 1px solid orange;
+}
+
+.login-container .login-wrapper .login-inner .terms-container input {
+  margin-right: 0.7rem;
+}
+
+.login-container .login-wrapper .login-inner .terms-container span a {
+  color: rgba(0, 0, 0, 0.534);
+}
+
+.login-container .login-wrapper .login-inner .login-btn-container {
+  margin-top: 1.5rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.login-container .login-wrapper .login-inner .login-btn-container .login-btn-span {
+  margin-top: 0.7rem;
+  margin-bottom: 0.7rem;
+}
+
+.login-container .login-wrapper .login-inner .login-btn-container .login-btn {
+  background-color: #ff4400db;
+  color: white;
+}
+
+.login-container .login-wrapper .login-inner .login-btn-container .login-google {
+  background: #ffffff;
+  -webkit-box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.08);
+          box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.login-container .login-wrapper .login-inner .login-btn-container .login-google .google-img {
+  width: 20px;
+}
+
+.login-container .login-wrapper .login-inner .login-btn-container .login-google span {
+  margin-left: 1rem;
+}
+
+.login-container .login-wrapper .login-inner .login-btn-container button {
+  width: 100%;
+  border-radius: 6px;
+  padding: 10px;
+}
+
+@media screen and (min-width: 768px) {
+  .login-container {
+    -webkit-box-pack: space-evenly;
+        -ms-flex-pack: space-evenly;
+            justify-content: space-evenly;
+  }
+  .login-container .login-wrapper {
+    width: 50%;
+  }
+}
+
+.dashboard-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  width: 90%;
+  margin: auto;
+  min-height: 70vh;
+  background: white;
+  border: 1px solid rgba(128, 128, 128, 0.205);
+  border-radius: 5px;
+  padding-top: 2rem;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  margin-top: 4rem;
+  padding: 30px;
+}
+
+.dashboard-container h2 {
+  text-align: center;
+  font-size: 30px;
+  font-weight: 400;
+}
+
+.dashboard-container .dash-btns {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin-top: 2rem;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  width: 100%;
+}
+
+.dashboard-container .dash-btns button {
+  margin-top: 0.3rem;
+  background-color: orangered;
+  color: white;
+  padding: 10px;
+  width: 100%;
+}
+
+.dashboard-container .dash-btns button a {
+  color: white;
+}
+
+@media screen and (min-width: 768px) {
+  .dashboard-container {
+    width: 50%;
+  }
+}
+
+.nav-container {
+  background: rgba(0, 0, 0, 0.507);
+  background: white;
+  border: 1px solid rgba(128, 128, 128, 0.205);
+}
+
+.nav-container .nav-inner {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  padding: 5px;
+  width: 90%;
+  margin: auto;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.nav-container .nav-inner img {
+  width: 100px;
+  cursor: pointer;
+}
+
+.nav-container .nav-inner .flex-nav {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 60%;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.nav-container .nav-inner .flex-nav .avatar-container {
+  background: rgba(255, 68, 0, 0.747);
+  border: 1px solid rgba(128, 128, 128, 0.205);
+  padding: 2px;
+  border-radius: 50%;
+}
+
+.nav-container .nav-inner .flex-nav .avatar-container img {
+  width: 100%;
+}
+
+.nav-container .nav-inner .flex-nav .avatar-container .nav-pop {
+  position: relative;
+}
+
+.nav-container .nav-inner .flex-nav .avatar-container .nav-pop ul {
+  background: white;
+  border: 1px solid rgba(128, 128, 128, 0.205);
+  padding-top: 2rem;
+  padding: 1rem;
+  padding-bottom: 2rem;
+  position: absolute;
+  right: 0;
+}
+
+.nav-container .nav-inner .flex-nav .avatar-container .nav-pop ul li {
+  display: inline-block;
+  padding-top: 0.5rem;
+}
+
+.nav-container .nav-inner .flex-nav ul li {
+  display: inline-block;
+  margin-left: 2rem;
+}
+
+.product-container .product-grid {
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  width: 70%;
+  margin: auto;
+  margin-top: 4rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.product-container .product-grid .product-card {
+  margin: 0.2rem;
+  background: white;
+  border: 1px solid rgba(128, 128, 128, 0.205);
+  padding: 10px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.product-container .product-grid .product-card h1 {
+  font-size: 24px;
+}
+
+.product-container .product-grid .product-card .product-btn button {
+  padding: 5px;
+  margin: 0.3rem;
+  cursor: pointer;
+}
+/*# sourceMappingURL=component.css.map */

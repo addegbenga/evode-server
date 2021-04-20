@@ -12,8 +12,27 @@ router.get("/test", (req, res) => {
 
 //public route to get all products
 router.get("/all", async (req, res) => {
+  console.log(req.body);
   try {
     let product = await Product.find();
+    return res.json({ msg: "success", data: product });
+  } catch (error) {
+    console.log(error);
+    return res.json({ error: "server error" });
+  }
+});
+router.post("/all", async (req, res) => {
+  let findArgs = {};
+
+  for (let key in req.body.filter) {
+    if (req.body.filter[key].length > 0) {
+      findArgs[key] = req.body.filter[key];
+    }
+  }
+  const { productCategory } = findArgs;
+  try {
+    let product = await Product.find({ productCategory });
+    // let product = await Product.find();
     return res.json({ msg: "success", data: product });
   } catch (error) {
     console.log(error);

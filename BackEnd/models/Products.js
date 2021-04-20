@@ -14,6 +14,7 @@ const productSchema = new mongoose.Schema(
     },
     productCategory: {
       type: String,
+      default: "all",
     },
     productPrice: {
       type: String,
