@@ -10,7 +10,6 @@ import { authContext } from "./context/authContext";
 import ChangePassword from "./components/auth/ChangePassword";
 import ForgotPassword from "./components/auth/ForgotPassword";
 import Resetpassword from "./components/auth/Resetpassword";
-import Navbar from "./components/nav/Navbar";
 import ProductDetails from "./components/product/ProductDetails";
 import Adminboard from "./components/admin/Adminboard";
 export default function App() {

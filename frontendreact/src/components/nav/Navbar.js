@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import lenx from "../../img/lenx.png";
 import avatar from "../../img/profile.png";

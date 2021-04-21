@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import notification from "../../img/Vector.png";
-
+import { datass, options } from "../mockdata";
+import LineGraph from "../charts/LineGraph";
 
 export default function RightPane() {
+  // eslint-disable-next-line
   const [data, setData] = useState([
     {
       title: "Customer orders",
@@ -25,8 +27,18 @@ export default function RightPane() {
       img: notification,
     },
   ]);
+
+  // eslint-disable-next-line
+  const [datas, setDatas] = useState({
+    response: datass,
+    labels: options,
+  });
+  const { labels, response } = datas;
   return (
-    <section className="p-5 bg-lenx-bg w-screen ">
+    <section
+    style={{ overflowY: "scroll", height:"100vh" }}
+      className="p-5 bg-lenx-bg w-screen "
+    >
       <div className="flex justify-between items-center py-3">
         <h1 className="text-2xl font-bold ">Dashboard</h1>
         <span className="p-2 bg-white rounded-full">
@@ -50,7 +62,8 @@ export default function RightPane() {
         ))}
       </div>
       <div>
-        <h1>React chart component</h1>
+        {/* <h1>React chart component</h1> */}
+        <LineGraph data={response} options={labels} />
       </div>
       <div>
         <h1>Top selling products</h1>

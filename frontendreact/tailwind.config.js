@@ -8,6 +8,7 @@ module.exports = {
         "lenx-bg-secondary": "#393E46",
         "lenx-primary": "#B3E6E9",
         "lenx-text-primary": "#FF7538",
+        "lenx-text-primary-200": "#009CA3",
         "lenx-gray-100": "#C4C5C8",
       },
     },
