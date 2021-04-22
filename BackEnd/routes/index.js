@@ -1,17 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const passport = require("passport");
-const { ensureAuthenticated, forwardAuthenticated } = require("../config/auth");
-//Welcome Page
-router.get("/", forwardAuthenticated, (req, res) => res.render("welcome"));
 
-//Dashboard Page
+const { ensureAuthenticated, forwardAuthenticated } = require("../middleware/auth");
 
-router.get("/dashboard", ensureAuthenticated, (req, res) =>
-  res.render("dashboard", {
-    user: req.user,
-    message: req.flash("dashboardMessage"),
-  })
-);
+const { renderWelcomePage, renderDashboard } = require('../controllers/indexController');
+
+// Welcome Page
+router.get("/", forwardAuthenticated, renderWelcomePage);
+
+// Dashboard Page
+router.get("/dashboard", ensureAuthenticated, renderDashboard);
 
 module.exports = router;

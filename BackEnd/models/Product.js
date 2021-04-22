@@ -25,7 +25,7 @@ const productSchema = new mongoose.Schema(
     productDescription: {
       type: String,
     },
-    ProductSold: {
+    productSold: {
       type: Number,
       default: 0,
     },
@@ -38,4 +38,4 @@ const productSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("product", productSchema);
+module.exports = mongoose.model("Products", productSchema);

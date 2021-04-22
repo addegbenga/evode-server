@@ -1,4 +1,5 @@
 const joi = require("joi");
+
 const registerValidations = (data) => {
   const schema = joi.object({
     name: joi.string().required(),
@@ -20,6 +21,7 @@ const registerValidations = (data) => {
   });
   return schema.validate(data);
 };
+
 const loginValidations = (data) => {
   const schema = joi.object({
     email: joi.string().required().email(),
@@ -27,6 +29,7 @@ const loginValidations = (data) => {
   });
   return schema.validate(data);
 };
+
 const changePasswordValidation = (data) => {
   const schema = joi.object({
     newPassword: joi
@@ -64,6 +67,7 @@ const resetPasswordValidation = (data) => {
   });
   return schema.validate(data);
 };
+
 module.exports = {
   registerValidations,
   loginValidations,

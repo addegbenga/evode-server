@@ -9,7 +9,7 @@ const passport = require("passport");
 const app = express();
 
 // Passport Config
-require("./config/passport")(passport);
+require("./middleware/passport")(passport);
 
 //DB Config
 const CONNECTDB = require("./config/db");
@@ -67,15 +67,15 @@ app.use((req, res, next) => {
 
 /* ROUTES */
 
-
 //routes to test api and view engine
 app.use("/", require("./routes/index"));
 app.use("/users", require("./routes/users"));
 
 //routes to test api for json 
-app.use("/auth", require("./routes2/auth"));
-app.use("/2fa", require("./routes2/2fa"));
-app.use("/products", require("./routes2/products"));
+app.use("/auth", require("./routes/auth"));
+app.use("/2fa", require("./routes/2fa"));
+app.use("/products", require("./routes/products"));
 
 const port = process.env.PORT || 5000; //port setting
-app.listen(port, () => console.log("App listening on port " + port));
+
+app.listen(port, () => console.log(`Server hosted on: http://localhost:${port}`));
