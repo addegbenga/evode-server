@@ -3,7 +3,7 @@ const router = express.Router();
 
 const { ensureAuthenticated, forwardAuthenticated } = require("../middleware/auth");
 
-const { renderWelcomePage, renderDashboard } = require('../controllers/indexController');
+const { renderWelcomePage, renderDashboard } = require('../controllers/index');
 
 // Welcome Page
 router.get("/", forwardAuthenticated, renderWelcomePage);

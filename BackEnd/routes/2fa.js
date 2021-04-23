@@ -3,7 +3,7 @@ const router = express.Router();
 
 const { auth } = require("../middleware/verify");
 
-const { activate2faAuth, verifyToken, validateUser } = require('../controllers/2faController');
+const { activate2faAuth, verifyToken, validateUser } = require('../controllers/2fa');
 
 // Activate 2fa for a user
 router.post("/activate", auth, activate2faAuth);

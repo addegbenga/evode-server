@@ -21,7 +21,7 @@ const {
   renderResetPassView,
   resetPasswordWithToken,
   logOut
-} = require('../controllers/userController');
+} = require('../controllers/user');
 
 
 //get logged in user

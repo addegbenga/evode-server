@@ -2,27 +2,27 @@ const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema(
   {
-    productAuthor: {
+    author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    productImage: {
+    image: {
       type: String,
     },
-    productName: {
+    name: {
       type: String,
     },
-    productCategory: {
+    category: {
       type: String,
     },
-    productPrice: {
+    price: {
       type: String,
     },
-    productQuantity: {
+    quantity: {
       type: Number,
       default: 0,
     },
-    productDescription: {
+    description: {
       type: String,
     },
     productSold: {

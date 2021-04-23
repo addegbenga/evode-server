@@ -3,7 +3,7 @@ const router = express.Router();
 
 const { auth, protect } = require("../middleware/verify");
 
-const { getAllProducts, getOneProduct, createProduct, updateProduct } = require("../controllers/productController");
+const { getAllProducts, getOneProduct, createProduct, updateProduct } = require("../controllers/product");
 
 
 // Public route to get all products

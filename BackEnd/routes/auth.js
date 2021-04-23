@@ -12,7 +12,7 @@ const {
   sendResetEmail,
   getResetPassPage,
   updatePasswordWithToken
-} = require("../controllers/authController");
+} = require("../controllers/auth");
 
 // Get logged in user
 router.get("/me", auth, getUser);
