@@ -37,8 +37,14 @@ class UserController {
           console.log(error);
         }
     }
+    
+}
 
-    renderLoginView(req, res) {
+module.exports = new UserController();
+
+/* 
+
+renderLoginView(req, res) {
       return res.render("login", { message: req.flash("loginMessage") });
     }
     
@@ -328,7 +334,5 @@ class UserController {
       req.flash("success_msg", "You are logged out");
       res.redirect("/users/login");
     }
-    
-}
 
-module.exports = new UserController();
+*/

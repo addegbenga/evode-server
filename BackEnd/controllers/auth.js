@@ -245,6 +245,10 @@ class AuthController {
           });
         }
       }
+
+      async loginWithGithub(req, res) {
+        await res.redirect('http://localhost:3000');
+      }
 }
 
 module.exports = new AuthController();

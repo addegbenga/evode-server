@@ -9,7 +9,10 @@ const passport = require("passport");
 const app = express();
 
 // Passport Config
-require("./middleware/passport")(passport);
+const { localStrategyConfiguration, githubStrategyConfiguration }= require("./middleware/passport");
+
+localStrategyConfiguration(passport);
+githubStrategyConfiguration(passport);
 
 //DB Config
 const CONNECTDB = require("./config/db");

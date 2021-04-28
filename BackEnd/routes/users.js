@@ -27,6 +27,34 @@ const {
 //get logged in user
 router.get("/me", auth, getUser);
 
+
+
+module.exports = router;
+
+
+/*
+
+// Register with passport
+router.post("/register", registerWithPassport);
+
+// Login with Passport
+router.post("/login", loginWithPassport);
+
+// Change password
+router.put("/passwordChange", ensureAuthenticated, updatePassword);
+
+// Delete user function
+router.put("/deleteUser", ensureAuthenticated, deleteUser);
+
+// Forgot generate password link and send through email
+router.post("/forgotpassword", emailForgottenPass);
+
+// Change password with reset token
+router.put("/resetpassword/:resettoken", resetPasswordWithToken);
+
+//Log out
+router.get("/logout", logOut);
+
 // Render Login View
 router.get("/login", renderLoginView);
 
@@ -36,37 +64,16 @@ router.get("/register", renderRegisterView);
 // 2 factor authenticator
 router.get("/setup-2fa", render2factAuth);
 
-// Register with passport
-router.post("/register", registerWithPassport);
-
-// Login with Passport
-router.post("/login", loginWithPassport);
+// Delete user View
+router.get("/delete", ensureAuthenticated, renderDeleteView);
 
 // Change Password page
 router.get("/passwordChange", ensureAuthenticated, renderChangePassView);
 
-// Change password
-router.put("/passwordChange", ensureAuthenticated, updatePassword);
-
-// Delete user View
-router.get("/delete", ensureAuthenticated, renderDeleteView);
-
-// Delete user function
-router.put("/deleteUser", ensureAuthenticated, deleteUser);
-
 // Get forgot password page
 router.get("/forgotPassword", renderForgottenPassView);
-
-// Forgot generate password link and send through email
-router.post("/forgotpassword", emailForgottenPass);
 
 // Get reset password page through the reset email link
 router.get("/resetpassword/:resetToken", renderResetPassView);
 
-// Change password with reset token
-router.put("/resetpassword/:resettoken", resetPasswordWithToken);
-
-//Log out
-router.get("/logout", logOut);
-
-module.exports = router;
+*/

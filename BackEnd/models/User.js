@@ -1,17 +1,23 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
+
 const UserSchema = new mongoose.Schema(
   {
+    socialID: {
+      type: String
+    },
     name: {
       type: String,
+      required: true
     },
     email: {
       type: String,
+      required: true
     },
     password: {
       type: String,
+    },
+    avatar: {
+      type: String
     },
     role: {
       type: String,
@@ -19,69 +25,23 @@ const UserSchema = new mongoose.Schema(
       required: true,
       default: "role2",
     },
-    tempSecret: {
-      type: Object,
-    },
-    secret: {
-      type: Object,
-    },
-    hookEnabled: {
-      type: Boolean,
-      default: true,
-    },
-    resetPasswordToken: String,
-    resetPasswordExpire: Date,
+    sessions: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Session",
+      }
+    ],
+    product: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+      }
+    ]
   },
   {
     timestamps: true,
   }
 );
 
-//Encrypt password using bcrypt
-UserSchema.pre("save", async function (next) {
-  if (this.hookEnabled) {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-  } else {
-    this.hookEnabled = undefined;
-    next();
-  }
-});
-
-//Password matcher
-UserSchema.methods.matchPassword = async function (enteredPass) {
-  return await bcrypt.compare(enteredPass, this.password);
-};
-
-//generate and hash usr pass
-UserSchema.methods.getResetPasswordToken = function () {
-  //Generate Token
-
-  const resetToken = crypto.randomBytes(20).toString("hex");
-
-  //Hash token and set to resetPassowrd field
-  this.resetPasswordToken = crypto
-    .createHash("sha256")
-    .update(resetToken)
-    .digest("hex");
-
-  //set expire
-
-  this.resetPasswordExpire = Date.now(10 * 60 * 1000);
-  return resetToken;
-};
-
-//sign jwt
-UserSchema.methods.getSignedJwtToken = function () {
-  return jwt.sign(
-    {
-      _id: this._id,
-    },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "2days",
-    }
-  );
-};
 
 module.exports = mongoose.model("User", UserSchema);
