@@ -1,23 +1,28 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
-const UserSchema = new mongoose.Schema(
+const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+
+const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
+      required: [true, "Please enter your name!"],
+      trim: true,
     },
     email: {
       type: String,
+      required: [true, "Please enter your email!"],
+      trim: true,
+      unique: true,
     },
     password: {
       type: String,
+      required: [true, "Please enter your password!"],
     },
     role: {
-      type: String,
-      enum: ["role1", "role2"],
-      required: true,
-      default: "role2",
+      type: Number,
+      default: 0, // 0 = user, 1 = admin
     },
     tempSecret: {
       type: Object,
@@ -29,16 +34,25 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    resetPasswordToken: String,
-    resetPasswordExpire: Date,
+    history: {
+      type: Array,
+      default: [],
+    },
+    resetPassword: String,
+    resetPasswordExpire: String,
+
+    avatar: {
+      type: String,
+      default:
+        "https://res.cloudinary.com/devatchannel/image/upload/v1602752402/avatar/avatar_cugq40.png",
+    },
   },
   {
     timestamps: true,
   }
 );
-
 //Encrypt password using bcrypt
-UserSchema.pre("save", async function (next) {
+userSchema.pre("save", async function (next) {
   if (this.hookEnabled) {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
@@ -49,12 +63,12 @@ UserSchema.pre("save", async function (next) {
 });
 
 //Password matcher
-UserSchema.methods.matchPassword = async function (enteredPass) {
+userSchema.methods.matchPassword = async function (enteredPass) {
   return await bcrypt.compare(enteredPass, this.password);
 };
 
 //generate and hash usr pass
-UserSchema.methods.getResetPasswordToken = function () {
+userSchema.methods.getResetPasswordToken = function () {
   //Generate Token
 
   const resetToken = crypto.randomBytes(20).toString("hex");
@@ -66,24 +80,38 @@ UserSchema.methods.getResetPasswordToken = function () {
     .digest("hex");
 
   //set expire
-
   this.resetPasswordExpire = Date.now(10 * 60 * 1000);
   return resetToken;
 };
 
-//sign jwt
-UserSchema.methods.getSignedJwtToken = function () {
+//sign jwt with refresh token
+userSchema.methods.getRefreshToken = function () {
   return jwt.sign(
     {
       _id: this._id,
     },
-    process.env.JWT_SECRET,
+    process.env.REFRESH_TOKEN_SECRET,
     {
-      expiresIn: "2days",
+      expiresIn: "7d",
     }
   );
 };
 
-const User = mongoose.model("User", UserSchema);
+//sign jwt with activation token
+userSchema.methods.getActivationToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+    },
+    process.env.ACTIVATION_TOKEN_SECRET,
+    {
+      expiresIn: "5m",
+    }
+  );
+};
+
+
+const User = mongoose.model("User", userSchema);
+
 
 module.exports = User;

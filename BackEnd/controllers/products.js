@@ -1,17 +1,8 @@
-const express = require("express");
 const User = require("../models/User");
 const Product = require("../models/Products");
-const { auth, protect } = require("../config/verify");
-const router = express.Router();
-
-//get logged in user
-
-router.get("/test", (req, res) => {
-  res.json("testingn route reached");
-});
 
 //public route to get all products
-router.get("/all", async (req, res) => {
+exports.allProduct = async (req, res) => {
   try {
     let product = await Product.find();
     return res.json({ msg: "success", data: product });
@@ -19,10 +10,10 @@ router.get("/all", async (req, res) => {
     console.log(error);
     return res.json({ error: "server error" });
   }
-});
+};
 
 //public route to get products by id
-router.get("/:id", async (req, res) => {
+exports.getProductById = async (req, res) => {
   try {
     let product = await Product.findById(req.params.id);
     if (!product) {
@@ -32,10 +23,10 @@ router.get("/:id", async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-});
+};
 
 //route to create a product by a user
-router.post("/add", auth, protect("role1"), async (req, res) => {
+exports.createProduct = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
     if (!user) {
@@ -52,16 +43,18 @@ router.post("/add", auth, protect("role1"), async (req, res) => {
       productQuantity: req.body.productQuantity,
       productDescription: req.body.productDescription,
       productSold: req.body.productSold,
+      shippingMethod: req.body.shippingMethod,
+      shippingZone: req.body.shippingZone,
     });
     const response = await newProduct.save();
     return res.json({ msg: "product created succesfully", data: response });
   } catch (error) {
     return res.json("server error");
   }
-});
+};
 
 //routes to edit products
-router.put("/edit/:id", auth, protect("role1"), async (req, res) => {
+exports.editProduct = async (req, res) => {
   const fieldToUpdate = {
     productImage: req.body.productImage,
     productName: req.body.productName,
@@ -70,6 +63,8 @@ router.put("/edit/:id", auth, protect("role1"), async (req, res) => {
     productQuantity: req.body.productQuantity,
     productDescription: req.body.productDescription,
     productSold: req.body.productSold,
+    shippingMethod: req.body.shippingMethod,
+    shippingZone: req.body.shippingZone,
   };
   try {
     let user = await User.findById(req.user.id);
@@ -90,6 +85,4 @@ router.put("/edit/:id", auth, protect("role1"), async (req, res) => {
     console.log(error);
     return res.json({ error: "server error" });
   }
-});
-
-module.exports = router;
+};

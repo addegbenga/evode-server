@@ -1,21 +1,14 @@
 const express = require("express");
-const router = express.Router();
-const passport = require("passport");
 const User = require("../models/User");
-const { auth } = require("../config/verify");
 const qrcode = require("qrcode");
 const crypto = require("crypto");
 const speakeasy = require("speakeasy");
 
 //get logged in user
 
-router.get("/test", (req, res) => {
-  res.json("testingn route reached");
-});
-
 //activate 2fa for a user
 
-router.post("/activate", auth, async (req, res) => {
+exports.activate = async (req, res) => {
   try {
     let user = await User.findById(req.user.id);
     const temp_secret = speakeasy.generateSecret();
@@ -32,11 +25,11 @@ router.post("/activate", auth, async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-});
+};
 
 //verify token and make secret permanent
 
-router.post("/verify", auth, async (req, res) => {
+exports.verify = async (req, res) => {
   const { token } = req.body;
 
   try {
@@ -72,11 +65,11 @@ router.post("/verify", auth, async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-});
+};
 
-//routeto validate the user
+//route to validate the user
 
-router.post("/validate", auth, async (req, res) => {
+exports.validate = async (req, res) => {
   const { token } = req.body;
   try {
     let user = await User.findById(req.user.id);
@@ -100,6 +93,6 @@ router.post("/validate", auth, async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-});
+};
 
-module.exports = router;
+
