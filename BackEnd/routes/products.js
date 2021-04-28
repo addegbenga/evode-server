@@ -2,13 +2,13 @@ const express = require("express");
 const router = express.Router();
 
 const {
-    allProduct,
+    getAllProducts,
     createProduct,
     getProductById,
     editProduct,
   } = require("../controllers/product");
   
-  router.get("/all", allProduct);
+  router.get("/all", getAllProducts);
   router.post("/create", createProduct);
   router.get("/:id", getProductById);
   router.put("/edit/:id", editProduct);

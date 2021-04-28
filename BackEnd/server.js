@@ -43,7 +43,7 @@ app.use(morgan("tiny"));
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/2fa", require("./routes/2fa"));
 
-app.use("/products", require("./routes/products"));
+app.use("/product", require("./routes/products"));
 
 const port = process.env.PORT || 5000; //port setting
 
