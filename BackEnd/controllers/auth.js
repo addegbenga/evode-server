@@ -1,5 +1,5 @@
 const Users = require("../models/User");
-const { sendTokenResponse } = require("../middlewares/utils");
+const { sendTokenResponse } = require("../middleware/utils");
 // const sendMail = require('./sendMail')
 
 const { google } = require("googleapis");

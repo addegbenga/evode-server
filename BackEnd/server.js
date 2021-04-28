@@ -23,9 +23,6 @@ app.use(cookieParser());
 //public add
 app.use(express.static("public"));
 
-//routes to test api and view engine
-app.use("/", require("./routes/index"));
-app.use("/user", require("./routes/users"));
 
 //setup cors
 app.use(cors("*"));
