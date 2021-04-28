@@ -1,7 +1,5 @@
 const express = require("express");
-const router = express.Router();
 const User = require("../models/User");
-const { auth } = require("../config/verify");
 const qrcode = require("qrcode");
 const crypto = require("crypto");
 const speakeasy = require("speakeasy");
@@ -69,7 +67,7 @@ exports.verify = async (req, res) => {
   }
 };
 
-//routeto validate the user
+//route to validate the user
 
 exports.validate = async (req, res) => {
   const { token } = req.body;
@@ -97,4 +95,4 @@ exports.validate = async (req, res) => {
   }
 };
 
-module.exports = router;
+
