@@ -1,5 +1,6 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const morgan = require("morgan");
 const cors = require("cors");
 
 const app = express();
@@ -22,7 +23,14 @@ app.use(cookieParser());
 app.use(express.static("public"));
 
 //setup cors
-app.use(cors("*"))
+app.use(cors("*"));
+
+//logger
+app.use(morgan("tiny"));
+
+//setup api
+app.use("/api/auth", require("./routes2/auth"));
+app.use("/api/2fa", require("./routes2/2fa"));
 
 const port = process.env.PORT || 5000; //port setting
 app.listen(port, () => console.log("App listening on port " + port));

@@ -1,76 +1,23 @@
-const Users = require("../models/User");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const { sendTokenResponse } = require("../middlewares/utils");
-// const sendMail = require('./sendMail')
+const express = require("express");
+const router = express.Router();
+const auth = require("../middlewares/auth");
 
-const { google } = require("googleapis");
-const { OAuth2 } = google.auth;
+// Load Controllers
+const {
+  googleLogin,
+  registration,
+  activateAccount,
+  login,
+  forgotPassword,
+  resetPassword,
+} = require("../controllers/auth");
 
-const client = new OAuth2(process.env.GOOGLE_CLIENT_ID);
+// Google Login
+router.post("/googlelogin", googleLogin);
+router.post("/register", registration);
+router.post("/login", login);
+router.post("/emailverification", activateAccount);
+router.put("/forgotpassword", forgotPassword);
+router.put("/resetpassword", resetPassword);
 
-const { CLIENT_URL } = process.env;
-
-//get logged in user
-exports.getUser = async (req, res) => {
-  try {
-    const user = await Users.findById(req.user.id).select("-password");
-    res.json(user);
-  } catch (err) {
-    return res.status(500).json({ msg: err.message });
-  }
-};
-
-//register user locally
-exports.registration = async () => {};
-
-//activate user account
-exports.activateAccount = async () => {};
-
-//login user locally
-exports.login = async () => {};
-
-//forgot passowrd
-exports.forgotPassword = async () => {};
-
-//reset password
-exports.resetpassword = async () => {};
-
-//google login
-exports.googleLogin = async (req, res) => {
-  try {
-    const { tokenId } = req.body;
-
-    const verify = await client.verifyIdToken({
-      idToken: tokenId,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
-
-    const { email_verified, email, name, picture } = verify.payload;
-    const password = email + process.env.GOOGLE_CLIENT_SECRET;
-    if (!email_verified) {
-      return res.status(400).json({ msg: "Email verification failed." });
-    }
-
-    const user = await Users.findOne({ email });
-
-    if (user) {
-      const validate = await user.matchPassword(password);
-      if (!validate) {
-        return res.status(400).json({ msg: "Password is incorrect." });
-      }
-      sendTokenResponse(user, 200, res);
-    } else {
-      const newUser = new Users({
-        name,
-        email,
-        password,
-        avatar: picture,
-      });
-      await newUser.save();
-      sendTokenResponse(user, 200, res);
-    }
-  } catch (err) {
-    return res.status(500).json({ msg: err.message });
-  }
-};
+module.exports = router;
