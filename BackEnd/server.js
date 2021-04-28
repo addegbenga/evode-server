@@ -1,8 +1,6 @@
 const express = require("express");
-const expressLayout = require("express-ejs-layouts");
-const flash = require("connect-flash");
-const expressSession = require("express-session");
-const methodOveride = require("method-override");
+const cookieParser = require("cookie-parser");
+const morgan = require("morgan");
 const cors = require("cors");
 const passport = require("passport");
 
@@ -20,63 +18,31 @@ const CONNECTDB = require("./config/db");
 //Connect to MongoDB ATLAS
 CONNECTDB();
 
-//EJS
-app.use(expressLayout);
-app.set("view engine", "ejs");
+//view engine
+app.set("view engine", "pug");
 
+//bodyParser
 app.use(express.json());
-// app.use(cookieParser("foo"));
-
-//bodyParser
-//bodyParser
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 //public add
-
 app.use(express.static("public"));
-app.use(cors("*"));
-
-//method overide to send a put request
-app.use(methodOveride("_method"));
-
-//Express session
-app.use(
-  expressSession({
-    secret: "foo",
-    resave: false,
-    cookie: {
-      expires: false,
-      // domain: config.cookie.domain
-    },
-    saveUninitialized: false,
-  })
-);
-
-//Passport
-app.use(passport.initialize());
-app.use(passport.session());
-
-//Connect flash
-app.use(flash());
-
-//Global variables for different messages (maybe add this in a separate file)
-app.use((req, res, next) => {
-  res.locals.success_msg = req.flash("success_msg");
-  res.locals.error_msg = req.flash("error_msg");
-  res.locals.error = req.flash("error");
-  res.locals.delete_msg = req.flash("delete_msg");
-  next();
-});
-
-/* ROUTES */
 
 //routes to test api and view engine
 app.use("/", require("./routes/index"));
-app.use("/users", require("./routes/users"));
+app.use("/user", require("./routes/users"));
 
-//routes to test api for json 
-app.use("/auth", require("./routes/auth"));
-app.use("/2fa", require("./routes/2fa"));
+//setup cors
+app.use(cors("*"));
+
+//logger
+app.use(morgan("tiny"));
+
+//setup api
+app.use("/api/auth", require("./routes/auth"));
+app.use("/api/2fa", require("./routes/2fa"));
+
 app.use("/products", require("./routes/products"));
 
 const port = process.env.PORT || 5000; //port setting

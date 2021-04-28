@@ -1,27 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
-const { auth } = require("../middleware/verify");
+const auth = require('../middleware/verify');
 
 const { ensureAuthenticated } = require("../middleware/auth");
 
-const { 
-  getUser, 
-  renderLoginView, 
-  renderRegisterView,
-  render2factAuth,
-  registerWithPassport,
-  loginWithPassport,
-  renderChangePassView,
-  updatePassword,
-  renderDeleteView,
-  deleteUser,
-  renderForgottenPassView,
-  emailForgottenPass,
-  renderResetPassView,
-  resetPasswordWithToken,
-  logOut
-} = require('../controllers/user');
+const { getUser } = require('../controllers/user');
 
 
 //get logged in user

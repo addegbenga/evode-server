@@ -1,17 +1,17 @@
 const express = require("express");
 const router = express.Router();
+const auth = require("../middleware/verify");
 
-const { auth } = require("../middleware/verify");
+// Load Controllers
+const { activate, verify, validate } = require("../controllers/2fa");
 
-const { activate2faAuth, verifyToken, validateUser } = require('../controllers/2fa');
+//activate 2fa
+router.get("/activate", auth, activate);
 
-// Activate 2fa for a user
-router.post("/activate", auth, activate2faAuth);
+//verify 2fa account
+router.put("/verify", auth, verify);
 
-// Verify token and make secret permanent
-router.post("/verify", auth, verifyToken);
-
-// Route to validate the user
-router.post("/validate", auth, validateUser);
+//validate 2fa account
+router.post("/validate", auth, validate);
 
 module.exports = router;
