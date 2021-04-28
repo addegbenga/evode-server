@@ -5,6 +5,9 @@ const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema(
   {
+    socialID: {
+      type: String
+    },
     name: {
       type: String,
       required: [true, "Please enter your name!"],
@@ -20,10 +23,27 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please enter your password!"],
     },
+    avatar: {
+      type: String,
+      default:
+        "https://res.cloudinary.com/devatchannel/image/upload/v1602752402/avatar/avatar_cugq40.png"
+    },
     role: {
       type: Number,
       default: 0, // 0 = user, 1 = admin
     },
+    sessions: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Session",
+      }
+    ],
+    product: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+      }
+    ],
     tempSecret: {
       type: Object,
     },
@@ -40,17 +60,12 @@ const userSchema = new mongoose.Schema(
     },
     resetPassword: String,
     resetPasswordExpire: String,
-
-    avatar: {
-      type: String,
-      default:
-        "https://res.cloudinary.com/devatchannel/image/upload/v1602752402/avatar/avatar_cugq40.png",
-    },
   },
   {
     timestamps: true,
   }
 );
+
 //Encrypt password using bcrypt
 userSchema.pre("save", async function (next) {
   if (this.hookEnabled) {
@@ -111,7 +126,4 @@ userSchema.methods.getActivationToken = function () {
 };
 
 
-const User = mongoose.model("User", userSchema);
-
-
-module.exports = User;
+module.exports = mongoose.model("User", userSchema);

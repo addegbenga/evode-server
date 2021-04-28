@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const auth = require("../middlewares/verify");
+const passport = require('passport')
+
+const auth = require("../middleware/verify");
 
 // Load Controllers
 const {
