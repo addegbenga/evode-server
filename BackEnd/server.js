@@ -2,15 +2,9 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const cors = require("cors");
-const passport = require("passport");
 
 const app = express();
 
-// Passport Config
-const { localStrategyConfiguration, githubStrategyConfiguration }= require("./middleware/passport");
-
-localStrategyConfiguration(passport);
-githubStrategyConfiguration(passport);
 
 //DB Config
 const CONNECTDB = require("./config/db");
