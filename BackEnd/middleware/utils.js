@@ -1,6 +1,6 @@
 //jwt token utils
 const sendTokenResponse = (user, statuscode, res) => {
-  const token = user.getSignedJwtToken();
+  const token = user.getRefreshToken();
 
   const options = {
     expires: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
@@ -11,11 +11,9 @@ const sendTokenResponse = (user, statuscode, res) => {
     options.secure = true;
   }
 
-  res.status(statuscode).cookie("token", token, options).json({
+  res.status(statuscode).cookie("refreshToken", token, options).json({
     msg: "woah valid credentials",
     data: user,
-   
-
     token,
   });
 };

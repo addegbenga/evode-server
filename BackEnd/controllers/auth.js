@@ -1,4 +1,5 @@
 const Users = require("../models/User");
+const fetch = require("node-fetch");
 const { sendTokenResponse } = require("../middleware/utils");
 // const sendMail = require('./sendMail')
 
@@ -18,7 +19,6 @@ exports.getUser = async (req, res) => {
     return res.status(500).json({ msg: err.message });
   }
 };
-
 //register user locally
 exports.registration = async () => {};
 
@@ -72,3 +72,44 @@ exports.googleLogin = async (req, res) => {
     return res.status(500).json({ msg: err.message });
   }
 };
+
+exports.facebookLogin = async () => {
+  const { accessToken, userID } = req.body;
+  try {
+    const URL = `https://graph.facebook.com/v2.9/${userID}/?fields=id,name,email,picture&access_token=${accessToken}`;
+
+    const data = await fetch(URL)
+      .then((res) => res.json())
+      .then((res) => {
+        return res;
+      });
+
+    const { email, name, picture } = data;
+
+    const password = email + process.env.FACEBOOK_SECRET;
+    const user = await Users.findOne({ email });
+
+    if (user) {
+      const validate = await user.matchPassword(password);
+      if (!validate) {
+        return res.status(400).json({ msg: "Password is incorrect." });
+      }
+
+      sendTokenResponse(user, 200, res);
+    } else {
+      const newUser = new Users({
+        name,
+        email,
+        password: passwordHash,
+        avatar: picture.data.url,
+      });
+
+      await newUser.save();
+
+      sendTokenResponse(user, 200, res);
+    }
+  } catch (err) {
+    return res.status(500).json({ msg: err.message });
+  }
+};
+exports.githubLogin = async (req, res) => {};
