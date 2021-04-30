@@ -20,19 +20,19 @@ exports.getUser = async (req, res) => {
   }
 };
 //register user locally
-exports.registration = async () => {};
+exports.registration = async (req, res) => {};
 
 //activate user account
-exports.activateAccount = async () => {};
+exports.activateAccount = async (req, res) => {};
 
 //login user locally
-exports.login = async () => {};
+exports.login = async (req, res) => {};
 
 //forgot passowrd
-exports.forgotPassword = async () => {};
+exports.forgotPassword = async (req, res) => {};
 
 //reset password
-exports.resetPassword = async () => {};
+exports.resetPassword = async (req, res) => {};
 
 //google login
 exports.googleLogin = async (req, res) => {

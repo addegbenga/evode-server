@@ -45,7 +45,7 @@ window.fbAsyncInit = function () {
 };
 
 
-//google login implementation
+// //google login implementation
 function onSignIn(googleUser) {
   const tokenId = googleUser.getAuthResponse().id_token;
   const data = fetch("/auth/google", {
