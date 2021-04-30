@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-const pug = require("pug");
+const ejs = require("ejs");
 const fs = require("fs");
 const path = require("path");
 // async..await is not allowed in global scope, must use a wrapper
@@ -16,7 +16,7 @@ const sendEmail = async (email, subject, payload, template) => {
     },
   });
 const source = fs.readFileSync(path.join(__dirname, template), "utf8");
-const compiledTemplate = pug.compile(source)
+const compiledTemplate = ejs.compile(source)
   // send mail with defined transport object
   const message = {
     // from: `${FROM_NAME} <${FROM_EMAIL}>`, // sender address

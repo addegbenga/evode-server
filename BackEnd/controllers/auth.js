@@ -1,6 +1,9 @@
 const Users = require("../models/User");
 const fetch = require("node-fetch");
+const jwt = require("jsonwebtoken");
 const { sendTokenResponse } = require("../middleware/utils");
+const
+const { loginValidations } = require("../middleware/validation");
 // const sendMail = require('./sendMail')
 
 const { google } = require("googleapis");
@@ -20,13 +23,65 @@ exports.getUser = async (req, res) => {
   }
 };
 //register user locally
-exports.registration = async (req, res) => {};
+exports.registration = async (req, res) => {
+  const { error } = registerValidations(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+  const { name, email, password } = req.body;
+
+  try {
+    let user = await User.findOne({ email });
+
+    if (user) {
+      return res.status(400).json("User already exist");
+    }
+
+    user = new User({
+      name,
+      email,
+      password,
+    });
+
+    const activation_token = jwt.sign(
+      user,
+      process.env.ACTIVATION_TOKEN_SECRET,
+      {
+        expiresIn: "15m",
+      }
+    );
+    const url = `${CLIENT_URL}/api/auth/activate/${activation_token}`;
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send(err + " Server error");
+  }
+};
 
 //activate user account
 exports.activateAccount = async (req, res) => {};
 
 //login user locally
-exports.login = async (req, res) => {};
+exports.login = async (req, res) => {
+  const { error } = loginValidations(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+  const { email, password } = req.body;
+  try {
+    let user = await User.findOne({ email }).select("+password");
+    if (!user) {
+      return res.status(400).json("invalid credentials");
+    }
+    //check if password matches
+    const isMatch = await user.matchPassword(password);
+    // const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(400).json("invalid credentials");
+    }
+
+    sendTokenResponse(user, 200, res);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send(err + " Server error");
+  }
+};
 
 //forgot passowrd
 exports.forgotPassword = async (req, res) => {};
