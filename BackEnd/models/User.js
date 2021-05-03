@@ -6,7 +6,7 @@ const bcrypt = require("bcryptjs");
 const userSchema = new mongoose.Schema(
   {
     socialID: {
-      type: String
+      type: String,
     },
     name: {
       type: String,
@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema(
     avatar: {
       type: String,
       default:
-        "https://res.cloudinary.com/devatchannel/image/upload/v1602752402/avatar/avatar_cugq40.png"
+        "https://res.cloudinary.com/devatchannel/image/upload/v1602752402/avatar/avatar_cugq40.png",
     },
     role: {
       type: Number,
@@ -36,13 +36,13 @@ const userSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Session",
-      }
+      },
     ],
     product: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Product",
-      }
+      },
     ],
     tempSecret: {
       type: Object,
@@ -58,7 +58,7 @@ const userSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
-    resetPassword: String,
+    resetPasswordToken: String,
     resetPasswordExpire: String,
   },
   {
@@ -86,6 +86,8 @@ userSchema.methods.matchPassword = async function (enteredPass) {
 userSchema.methods.getResetPasswordToken = function () {
   //Generate Token
 
+  //disable encrpting password hooks
+  this.hookEnabled = false;
   const resetToken = crypto.randomBytes(20).toString("hex");
 
   //Hash token and set to resetPassowrd field
@@ -124,6 +126,5 @@ userSchema.methods.getActivationToken = function () {
     }
   );
 };
-
 
 module.exports = mongoose.model("User", userSchema);

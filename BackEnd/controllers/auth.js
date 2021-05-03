@@ -1,22 +1,21 @@
-const Users = require("../models/User");
+const User = require("../models/User");
 const fetch = require("node-fetch");
 const jwt = require("jsonwebtoken");
 const { sendTokenResponse } = require("../middleware/utils");
-const
-const { loginValidations } = require("../middleware/validation");
-// const sendMail = require('./sendMail')
-
+const { sendEmail } = require("../middleware/email");
+const {
+  registerValidations,
+  loginValidations,
+} = require("../middleware/validation");
 const { google } = require("googleapis");
 const { OAuth2 } = google.auth;
-
 const client = new OAuth2(process.env.GOOGLE_CLIENT_ID);
-
 const { CLIENT_URL } = process.env;
 
 //get logged in user
 exports.getUser = async (req, res) => {
   try {
-    const user = await Users.findById(req.user.id).select("-password");
+    const user = await User.findById(req.user.id).select("-password");
     res.json(user);
   } catch (err) {
     return res.status(500).json({ msg: err.message });
@@ -34,7 +33,6 @@ exports.registration = async (req, res) => {
     if (user) {
       return res.status(400).json("User already exist");
     }
-
     user = new User({
       name,
       email,
@@ -42,21 +40,30 @@ exports.registration = async (req, res) => {
     });
 
     const activation_token = jwt.sign(
-      user,
+      {
+        user,
+      },
       process.env.ACTIVATION_TOKEN_SECRET,
       {
         expiresIn: "15m",
       }
     );
-    const url = `${CLIENT_URL}/api/auth/activate/${activation_token}`;
+    const resetUrl = `${CLIENT_URL}/activate/${activation_token}`;
+    await sendEmail(
+      user.email,
+      "Activate your acount",
+      {
+        name: "new charge",
+        link: resetUrl,
+      },
+      "../helpers/templates/activate.ejs"
+    );
+    return res.json({ msg: "Email sent successfully, check your ibox" });
   } catch (err) {
     console.error(err.message);
     res.status(500).send(err + " Server error");
   }
 };
-
-//activate user account
-exports.activateAccount = async (req, res) => {};
 
 //login user locally
 exports.login = async (req, res) => {
@@ -66,7 +73,7 @@ exports.login = async (req, res) => {
   try {
     let user = await User.findOne({ email }).select("+password");
     if (!user) {
-      return res.status(400).json("invalid credentials");
+      return res.status(400).json("user not found");
     }
     //check if password matches
     const isMatch = await user.matchPassword(password);
@@ -75,19 +82,12 @@ exports.login = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json("invalid credentials");
     }
-
     sendTokenResponse(user, 200, res);
   } catch (err) {
     console.error(err.message);
     res.status(500).send(err + " Server error");
   }
 };
-
-//forgot passowrd
-exports.forgotPassword = async (req, res) => {};
-
-//reset password
-exports.resetPassword = async (req, res) => {};
 
 //google login
 exports.googleLogin = async (req, res) => {
@@ -105,7 +105,7 @@ exports.googleLogin = async (req, res) => {
       return res.status(400).json({ msg: "Email verification failed." });
     }
 
-    const user = await Users.findOne({ email });
+    const user = await User.findOne({ email });
 
     if (user) {
       const validate = await user.matchPassword(password);
@@ -128,7 +128,7 @@ exports.googleLogin = async (req, res) => {
   }
 };
 
-exports.facebookLogin = async () => {
+exports.facebookLogin = async (req, res) => {
   const { accessToken, userID } = req.body;
   try {
     const URL = `https://graph.facebook.com/v2.9/${userID}/?fields=id,name,email,picture&access_token=${accessToken}`;
@@ -142,17 +142,16 @@ exports.facebookLogin = async () => {
     const { email, name, picture } = data;
 
     const password = email + process.env.FACEBOOK_SECRET;
-    const user = await Users.findOne({ email });
+    const user = await User.findOne({ email });
 
     if (user) {
       const validate = await user.matchPassword(password);
       if (!validate) {
         return res.status(400).json({ msg: "Password is incorrect." });
       }
-
       sendTokenResponse(user, 200, res);
     } else {
-      const newUser = new Users({
+      const newUser = new User({
         name,
         email,
         password: passwordHash,
@@ -167,4 +166,64 @@ exports.facebookLogin = async () => {
     return res.status(500).json({ msg: err.message });
   }
 };
-exports.githubLogin = async (req, res) => {};
+exports.githubLogin = async (req, res) => {
+  const { code } = req.body.response;
+  try {
+    const URL = `https://github.com/login/oauth/access_token`;
+
+    const body = {
+      client_id: process.env.GITHUB_ID,
+      client_secret: process.env.GITHUB_SECRET,
+      code: code,
+    };
+
+    const data = await fetch(URL, {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => res.text())
+      .then((res) => {
+        let params = new URLSearchParams(res);
+        const access_token = params.get("access_token");
+        // Request to return data of a user that has been authenticated
+        return fetch(`https://api.github.com/user`, {
+          headers: {
+            Authorization: `token ${access_token}`,
+          },
+        });
+      })
+      .then((response) => response.json())
+      .then((response) => {
+        return response;
+      });
+    console.log(data);
+
+    // const { login, name, picture } = data;
+
+    // const password = login + process.env.GITHUB_SECRET;
+    // const user = await User.findOne({ login });
+
+    // if (user) {
+    //   const validate = await user.matchPassword(password);
+    //   if (!validate) {
+    //     return res.status(400).json({ msg: "Password is incorrect." });
+    //   }
+
+    //   sendTokenResponse(user, 200, res);
+    // } else {
+    //   const newUser = new User({
+    //     name,
+    //     login,
+    //     password: passwordHash,
+    //     avatar: picture.data.url,
+    //   });
+
+    //   await newUser.save();
+
+    //   sendTokenResponse(user, 200, res);
+    // }
+  } catch (err) {
+    return res.status(500).json({ msg: err.message });
+  }
+};

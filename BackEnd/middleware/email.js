@@ -27,16 +27,6 @@ const compiledTemplate = ejs.compile(source)
     // html body
   };
 
-  //send email
-
-  // transporter.sendMail(options(), (error, info=>{
-  //   if(error){
-  //     return error;
-  //   }else{
-  //     return res.s
-  //   }
-  // }))
-
   const info = await transporter.sendMail(message);
 
   console.log("Message sent: %s", info.messageId);
