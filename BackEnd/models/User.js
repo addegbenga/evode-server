@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
 const passwordGenerator = require("password-generator");
 
 const aspirantSchema = new mongoose.Schema(
@@ -26,6 +25,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please enter your name!"],
     },
+    matric :{
+      type:String
+    },
     department: {
       type: String,
     },
@@ -47,18 +49,6 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
-// //Encrypt password using bcrypt
-// userSchema.pre("save", async function (next) {
-//   const salt = await bcrypt.genSalt(10);
-//   this.password = await bcrypt.hash(this.password, salt);
-//   next();
-// });
-
-// //Password matcher
-// userSchema.methods.matchPassword = async function (enteredPass) {
-//   return await bcrypt.compare(enteredPass, this.password);
-// };
 
 //sign jwt with refresh token
 userSchema.methods.getRefreshToken = function () {

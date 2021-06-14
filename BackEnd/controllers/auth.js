@@ -13,10 +13,10 @@ exports.getUser = async (req, res) => {
 };
 //register user locally
 exports.registration = async (req, res) => {
-  const { name } = req.body;
+  const { matric } = req.body;
 
   try {
-    let user = await User.findOne({ name });
+    let user = await User.findOne({ matric });
 
     if (user) {
       return res.status(400).json("User already exist");
@@ -32,9 +32,9 @@ exports.registration = async (req, res) => {
 
 //login user locally
 exports.login = async (req, res) => {
-  const { name, password } = req.body;
+  const { matric, password } = req.body;
   try {
-    let user = await User.findOne({ name });
+    let user = await User.findOne({ matric });
     if (password !== user.password) {
       return res.json({ msg: "passowrd does not match" });
     }
