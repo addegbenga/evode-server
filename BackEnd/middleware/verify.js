@@ -1,9 +1,10 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const {User} = require("../models/User");
 
 const auth = async (req, res, next) => {
   //get token from cookies
-  let token = req.cookies.refreshToken;
+
+  const token = req.header('x-auth-token');
 
   // Check if not token
   if (!token) {

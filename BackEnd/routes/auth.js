@@ -5,27 +5,24 @@ const auth = require("../middleware/verify");
 
 // Load Controllers
 const {
-  googleLogin,
   registration,
-  facebookLogin,
-  githubLogin,
   getUser,
   login,
+  vote,
+  aspirant,
+  getUsers,
+  createAllStudent,
+  updateAllStudent,
 } = require("../controllers/auth");
 
-//middlewares for checking status code
-
-router.use("/login", (req, res, next) => {
-  console.log(req.statusCode);
-  next();
-});
-
-// Google Login
-router.post("/googlelogin", googleLogin);
-router.post("/githublogin", githubLogin);
-router.post("/facebooklogin", facebookLogin);
 router.post("/register", registration);
 router.post("/login", login);
 router.get("/me", getUser);
+router.post("/vote", auth, vote);
+router.post("/create", aspirant);
+router.get("/getusers", getUsers);
+router.get("/getuser", auth, getUser);
+router.post("/bulk", createAllStudent);
+router.post("/updatebulk", updateAllStudent);
 
 module.exports = router;

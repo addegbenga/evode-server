@@ -1,105 +1,64 @@
-const crypto = require("crypto");
 const mongoose = require("mongoose");
+const { ObjectId } = mongoose.Schema.Types;
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const passwordGenerator = require("password-generator");
 
-const userSchema = new mongoose.Schema(
+const aspirantSchema = new mongoose.Schema(
   {
-    socialID: {
-      type: String,
-    },
-    name: {
-      type: String,
-      required: [true, "Please enter your name!"],
-      trim: true,
-    },
-    email: {
-      type: String,
-      required: [true, "Please enter your email!"],
-      trim: true,
-      unique: true,
-    },
-    password: {
-      type: String,
-      required: [true, "Please enter your password!"],
-    },
-    avatar: {
-      type: String,
-      default:
-        "https://res.cloudinary.com/devatchannel/image/upload/v1602752402/avatar/avatar_cugq40.png",
-    },
-    role: {
+    voteCount: {
       type: Number,
-      default: 0, // 0 = user, 1 = admin
+      default: 0,
     },
-    sessions: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Session",
-      },
-    ],
-    product: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product",
-      },
-    ],
-    tempSecret: {
-      type: Object,
-    },
-    secret: {
-      type: Object,
-    },
-    hookEnabled: {
-      type: Boolean,
-      default: true,
-    },
-    history: {
-      type: Array,
-      default: [],
-    },
-    resetPasswordToken: String,
-    resetPasswordExpire: String,
+    firstName: String,
+    lastName: String,
+    position: String,
+    photoUrl: String,
   },
   {
     timestamps: true,
   }
 );
 
-//Encrypt password using bcrypt
-userSchema.pre("save", async function (next) {
-  if (this.hookEnabled) {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-  } else {
-    this.hookEnabled = undefined;
-    next();
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Please enter your name!"],
+    },
+    department: {
+      type: String,
+    },
+    level: {
+      type: Number,
+    },
+    votes: [
+      {
+        type: ObjectId,
+        ref: "Aspirant",
+      },
+    ],
+    password: {
+      type: String,
+      default: passwordGenerator(6, false),
+    },
+  },
+  {
+    timestamps: true,
   }
-});
+);
 
-//Password matcher
-userSchema.methods.matchPassword = async function (enteredPass) {
-  return await bcrypt.compare(enteredPass, this.password);
-};
+// //Encrypt password using bcrypt
+// userSchema.pre("save", async function (next) {
+//   const salt = await bcrypt.genSalt(10);
+//   this.password = await bcrypt.hash(this.password, salt);
+//   next();
+// });
 
-//generate and hash usr pass
-userSchema.methods.getResetPasswordToken = function () {
-  //Generate Token
-
-  //disable encrpting password hooks
-  this.hookEnabled = false;
-  const resetToken = crypto.randomBytes(20).toString("hex");
-
-  //Hash token and set to resetPassowrd field
-  this.resetPasswordToken = crypto
-    .createHash("sha256")
-    .update(resetToken)
-    .digest("hex");
-
-  //set expire
-  this.resetPasswordExpire = Date.now(10 * 60 * 1000);
-  return resetToken;
-};
+// //Password matcher
+// userSchema.methods.matchPassword = async function (enteredPass) {
+//   return await bcrypt.compare(enteredPass, this.password);
+// };
 
 //sign jwt with refresh token
 userSchema.methods.getRefreshToken = function () {
@@ -127,4 +86,6 @@ userSchema.methods.getActivationToken = function () {
   );
 };
 
-module.exports = mongoose.model("User", userSchema);
+const Aspirants = mongoose.model("Aspirant", aspirantSchema);
+const User = mongoose.model("User", userSchema);
+module.exports = { User, Aspirants };

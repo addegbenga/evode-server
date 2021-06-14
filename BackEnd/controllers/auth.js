@@ -1,16 +1,6 @@
-const User = require("../models/User");
-const fetch = require("node-fetch");
-const jwt = require("jsonwebtoken");
+const { User, Votes, Aspirants } = require("../models/User");
+const passwordGenerator = require("password-generator");
 const { sendTokenResponse } = require("../middleware/utils");
-const { sendEmail } = require("../middleware/email");
-const {
-  registerValidations,
-  loginValidations,
-} = require("../middleware/validation");
-const { google } = require("googleapis");
-const { OAuth2 } = google.auth;
-const client = new OAuth2(process.env.GOOGLE_CLIENT_ID);
-const { CLIENT_URL } = process.env;
 
 //get logged in user
 exports.getUser = async (req, res) => {
@@ -23,42 +13,17 @@ exports.getUser = async (req, res) => {
 };
 //register user locally
 exports.registration = async (req, res) => {
-  const { error } = registerValidations(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
-  const { name, email, password } = req.body;
+  const { name } = req.body;
 
   try {
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ name });
 
     if (user) {
       return res.status(400).json("User already exist");
     }
-    user = new User({
-      name,
-      email,
-      password,
-    });
+    const newUser = await User.create(req.body);
 
-    const activation_token = jwt.sign(
-      {
-        user,
-      },
-      process.env.ACTIVATION_TOKEN_SECRET,
-      {
-        expiresIn: "15m",
-      }
-    );
-    const resetUrl = `${CLIENT_URL}/activate/${activation_token}`;
-    await sendEmail(
-      user.email,
-      "Activate your acount",
-      {
-        name: "new charge",
-        link: resetUrl,
-      },
-      "../helpers/templates/activate.ejs"
-    );
-    return res.json({ msg: "Email sent successfully, check your ibox" });
+    return res.json({ msg: newUser });
   } catch (err) {
     console.error(err.message);
     res.status(500).send(err + " Server error");
@@ -67,21 +32,16 @@ exports.registration = async (req, res) => {
 
 //login user locally
 exports.login = async (req, res) => {
-  const { error } = loginValidations(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
-  const { email, password } = req.body;
+  const { name, password } = req.body;
   try {
-    let user = await User.findOne({ email }).select("+password");
+    let user = await User.findOne({ name });
+    if (password !== user.password) {
+      return res.json({ msg: "passowrd does not match" });
+    }
     if (!user) {
       return res.status(400).json("user not found");
     }
-    //check if password matches
-    const isMatch = await user.matchPassword(password);
-    // const isMatch = await bcrypt.compare(password, user.password);
 
-    if (!isMatch) {
-      return res.status(400).json("invalid credentials");
-    }
     sendTokenResponse(user, 200, res);
   } catch (err) {
     console.error(err.message);
@@ -89,141 +49,82 @@ exports.login = async (req, res) => {
   }
 };
 
-//google login
-exports.googleLogin = async (req, res) => {
+exports.vote = async (req, res) => {
   try {
-    const { tokenId } = req.body;
+    const { ...args } = req.body;
 
-    const verify = await client.verifyIdToken({
-      idToken: tokenId,
-      audience: process.env.GOOGLE_CLIENT_ID,
+    const resp = await User.findOneAndUpdate(
+      { _id: req.user._id },
+
+      args,
+      {
+        upsert: true,
+      }
+    );
+    return res.json(resp);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.getUsers = async (req, res) => {
+  try {
+    const resp = await User.find().populate("votes");
+    return res.json(resp);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.aspirant = async (req, res) => {
+  try {
+    const { ...args } = req.body;
+
+    const resp = await Aspirants.create(args);
+    return res.json({ data: resp });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.createAllStudent = async (req, res) => {
+  try {
+    const newUsers = await User.insertMany(req.body);
+    return res.json(newUsers);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.updateAllStudent = async (req, res) => {
+  try {
+    const resp = await User.find();
+
+    const maped = resp.map((item) => {
+      let other = item;
+      console.log(other);
+      other.password = passwordGenerator(6, false);
+      return other;
     });
-
-    const { email_verified, email, name, picture } = verify.payload;
-    const password = email + process.env.GOOGLE_CLIENT_SECRET;
-    if (!email_verified) {
-      return res.status(400).json({ msg: "Email verification failed." });
-    }
-
-    const user = await User.findOne({ email });
-
-    if (user) {
-      const validate = await user.matchPassword(password);
-      if (!validate) {
-        return res.status(400).json({ msg: "Password is incorrect." });
-      }
-      sendTokenResponse(user, 200, res);
-    } else {
-      const newUser = new Users({
-        name,
-        email,
-        password,
-        avatar: picture,
-      });
-      await newUser.save();
-      sendTokenResponse(user, 200, res);
-    }
-  } catch (err) {
-    return res.status(500).json({ msg: err.message });
-  }
-};
-
-exports.facebookLogin = async (req, res) => {
-  const { accessToken, userID } = req.body;
-  try {
-    const URL = `https://graph.facebook.com/v2.9/${userID}/?fields=id,name,email,picture&access_token=${accessToken}`;
-
-    const data = await fetch(URL)
-      .then((res) => res.json())
-      .then((res) => {
-        return res;
-      });
-
-    const { email, name, picture } = data;
-
-    const password = email + process.env.FACEBOOK_SECRET;
-    const user = await User.findOne({ email });
-
-    if (user) {
-      const validate = await user.matchPassword(password);
-      if (!validate) {
-        return res.status(400).json({ msg: "Password is incorrect." });
-      }
-      sendTokenResponse(user, 200, res);
-    } else {
-      const newUser = new User({
-        name,
-        email,
-        password: passwordHash,
-        avatar: picture.data.url,
-      });
-
-      await newUser.save();
-
-      sendTokenResponse(user, 200, res);
-    }
-  } catch (err) {
-    return res.status(500).json({ msg: err.message });
-  }
-};
-exports.githubLogin = async (req, res) => {
-  const { code } = req.body.response;
-  try {
-    const URL = `https://github.com/login/oauth/access_token`;
-
-    const body = {
-      client_id: process.env.GITHUB_ID,
-      client_secret: process.env.GITHUB_SECRET,
-      code: code,
-    };
-
-    const data = await fetch(URL, {
-      method: "POST",
-      body: JSON.stringify(body),
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => res.text())
-      .then((res) => {
-        let params = new URLSearchParams(res);
-        const access_token = params.get("access_token");
-        // Request to return data of a user that has been authenticated
-        return fetch(`https://api.github.com/user`, {
-          headers: {
-            Authorization: `token ${access_token}`,
+    const newUpdate = await User.bulkWrite(
+      maped.map((point) => {
+        return {
+          updateOne: {
+            filter: {
+              _id: point._id,
+            },
+            update: {
+              $set: {
+                password: point.password,
+              },
+            },
+            upsert: true,
           },
-        });
+        };
       })
-      .then((response) => response.json())
-      .then((response) => {
-        return response;
-      });
-    console.log(data);
-
-    // const { login, name, picture } = data;
-
-    // const password = login + process.env.GITHUB_SECRET;
-    // const user = await User.findOne({ login });
-
-    // if (user) {
-    //   const validate = await user.matchPassword(password);
-    //   if (!validate) {
-    //     return res.status(400).json({ msg: "Password is incorrect." });
-    //   }
-
-    //   sendTokenResponse(user, 200, res);
-    // } else {
-    //   const newUser = new User({
-    //     name,
-    //     login,
-    //     password: passwordHash,
-    //     avatar: picture.data.url,
-    //   });
-
-    //   await newUser.save();
-
-    //   sendTokenResponse(user, 200, res);
-    // }
-  } catch (err) {
-    return res.status(500).json({ msg: err.message });
+    );
+    return res.json(newUpdate);
+  } catch (error) {
+    console.log(error);
   }
 };
