@@ -87,6 +87,15 @@ exports.aspirant = async (req, res) => {
   }
 };
 
+exports.getAspirants = async (req,res)=>{
+try{
+const aspirant = await Aspirants.find()
+return res.json({data:aspirant})
+} catch (error){
+  console.log(error)
+}
+}
+
 exports.createAllStudent = async (req, res) => {
   try {
     const newUsers = await User.insertMany(req.body);

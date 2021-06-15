@@ -13,6 +13,7 @@ const {
   getUsers,
   createAllStudent,
   updateAllStudent,
+  getAspirants
 } = require("../controllers/auth");
 
 router.post("/register", registration);
@@ -22,6 +23,7 @@ router.post("/vote", auth, vote);
 router.post("/create", aspirant);
 router.get("/getusers", getUsers);
 router.get("/getuser", auth, getUser);
+router.get("/aspirants", getAspirants);
 router.post("/bulk", createAllStudent);
 router.post("/updatebulk", updateAllStudent);
 
