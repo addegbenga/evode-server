@@ -41,7 +41,6 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(400).json("user not found");
     }
-
     sendTokenResponse(user, 200, res);
   } catch (err) {
     console.error(err.message);
@@ -67,6 +66,15 @@ exports.vote = async (req, res) => {
   }
 };
 
+const countVote = async (req, res) => {
+  try {
+    const aspirants = await Aspirants.findByid(req.body.aspirantId);
+    const user = await User.find({ _id: { $in: [aspirants.vote] } });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 exports.getUsers = async (req, res) => {
   try {
     const resp = await User.find().populate("votes");
@@ -81,20 +89,20 @@ exports.aspirant = async (req, res) => {
     const { ...args } = req.body;
 
     const resp = await Aspirants.create(args);
-    return res.json({ data: resp });
+    return res.json(resp);
   } catch (error) {
     console.log(error);
   }
 };
 
-exports.getAspirants = async (req,res)=>{
-try{
-const aspirant = await Aspirants.find()
-return res.json({data:aspirant})
-} catch (error){
-  console.log(error)
-}
-}
+exports.getAspirants = async (req, res) => {
+  try {
+    const aspirant = await Aspirants.find();
+    return res.json(aspirant);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 exports.createAllStudent = async (req, res) => {
   try {
